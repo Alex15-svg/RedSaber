@@ -3,10 +3,21 @@ const app = express(); // Crea una instancia de la aplicación Express.
 const PORT=3000; // Define el puerto en el que se ejecutará el servidor.
 const path = require('path'); // Módulo path para trabajar con rutas de archivos//directorios.
 const validator = require('validator'); // Módulo validator para validar y sanitizar datos de entrada (usado actualmente en validar correo institucional.)
+const pool = require('./config/dbPostgre'); // Importa la configuración de la base de datos PostgreSQL desde el archivo dbPostgre.js.
+
+
+
 
 
 // Middleware(s) para parsear el cuerpo de las solicitudes.
 app.use(express.json());
+
+// 
+pool.query('SELECT NOW()')
+  .then(r => console.log('Conectado:', r.rows[0]))
+  .catch(e => console.error('Error:', e.message));
+
+app.listen(3000, () => console.log('Servidor en http://localhost:3000'));
 
 
 app.get('/', (req, res) => {
