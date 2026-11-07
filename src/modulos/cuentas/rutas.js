@@ -1,0 +1,1 @@
+//Define los endpoints disponibles.

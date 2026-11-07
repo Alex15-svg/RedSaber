@@ -1,0 +1,1 @@
+//Gestiona los datos y la interacción con la base de datos.
