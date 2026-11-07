@@ -17,7 +17,6 @@ app.listen(PORT, () => {
     console.log(`**Servidor corriendo en el puerto: ${PORT}**`);
 });
 
-s.
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
