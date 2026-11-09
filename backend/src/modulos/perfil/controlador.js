@@ -6,6 +6,15 @@ const modelo = require('./modelo');
 const { CARPETA } = require('./subida');
 const { esOpcion } = require('../../utils/validar');
 
+// GET /api/perfil: el perfil de quien inició sesión, para mostrarlo y personalizarlo.
+async function verMiPerfil(req, res) {
+    const perfil = await modelo.obtener(req.usuario.id);
+    if (!perfil) {
+        return res.status(404).json({ error: 'La cuenta no existe.' });
+    }
+    res.json(perfil);
+}
+
 // Se ejecuta ANTES de multer: si el campo no es válido, no se guarda ningún archivo.
 function revisarCampo(req, res, next) {
     if (!esOpcion(modelo.COLUMNAS, req.params.campo)) {
@@ -46,4 +55,4 @@ async function cambiarCorreo(req, res) {
     res.json({ correo_publico: publico });
 }
 
-module.exports = { revisarCampo, cambiarImagen, cambiarCorreo };
+module.exports = { verMiPerfil, revisarCampo, cambiarImagen, cambiarCorreo };

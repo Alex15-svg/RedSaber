@@ -58,13 +58,37 @@ async function buscarPorId(id) {
 }
 
 // RF-02: solo el administrador puede ver la lista de usuarios
-async function listarUsuarios(req, res) {
-  try {
-    res.json(await modelo.listarUsuarios());
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Error interno' });
-  }
+// Lista de usuarios, sin contraseña (solo administrador)
+async function listarUsuarios() {
+  const r = await pool.query(
+    'SELECT id, nombre, correo_institucional, ocupacion, carrera, estado FROM usuarios ORDER BY id'
+  );
+  return r.rows;
 }
 
-module.exports = {  registrar, iniciarSesionCorreo, recuperar, restablecer, listarUsuarios };
+// RF-04 (paso 1): guarda el hash del token de recuperación. Vence en 1 hora (vigencia por definir).
+async function guardarToken(usuarioId, tokenHash) {
+  await pool.query(
+    `INSERT INTO tokens_recuperacion (usuario_id, token_hash, expira_en)
+     VALUES ($1, $2, now() + interval '1 hour')`,
+    [usuarioId, tokenHash]
+  );
+}
+
+// RF-04 (paso 2): si el token existe, no se usó y no venció, lo marca como usado y cambia la contraseña.
+// Devuelve false si el token no sirve.
+async function cambiarContrasenaConToken(tokenHash, contrasenaHash) {
+  return enTransaccion(async (c) => {
+    const r = await c.query(
+      `UPDATE tokens_recuperacion SET usado_en = now()
+       WHERE token_hash = $1 AND usado_en IS NULL AND expira_en > now()
+       RETURNING usuario_id`,
+      [tokenHash]
+    );
+    if (!r.rows[0]) return false;
+    await c.query('UPDATE usuarios SET contrasena_hash = $2 WHERE id = $1', [r.rows[0].usuario_id, contrasenaHash]);
+    return true;
+  });
+}
+
+module.exports = { buscarPorCorreo, crearUsuario, buscarPorId, listarUsuarios, guardarToken, cambiarContrasenaConToken };

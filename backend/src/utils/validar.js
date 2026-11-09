@@ -27,4 +27,26 @@ function esOpcion(lista, clave) {
     return Object.hasOwn(lista, clave);
 }
 
-module.exports = { leerId, revisarTextos, esOpcion };
+// Largo máximo de cada campo de una publicación o guía (coincide con tablas.sql).
+const LIMITES_PUBLICACION = { titulo: 200, carrera: 120, asignatura: 120, seccion: 30, descripcion: 5000 };
+
+// Valida los textos de una publicación y los devuelve sin espacios sobrantes.
+// Solo copia los campos esperados: cualquier otro dato del cliente se ignora.
+function leerPublicacion(cuerpo) {
+    const errores = revisarTextos(cuerpo, LIMITES_PUBLICACION);
+    const datos = {};
+    for (const campo of Object.keys(LIMITES_PUBLICACION)) {
+        if (typeof cuerpo[campo] === 'string') {
+            datos[campo] = cuerpo[campo].trim();
+        }
+    }
+    return { errores, datos };
+}
+
+// Lee un texto opcional de la URL (?carrera=...). Devuelve null si viene vacío.
+function textoOpcional(valor, maximo) {
+    if (typeof valor !== 'string' || valor.trim() === '') return null;
+    return valor.trim().slice(0, maximo);
+}
+
+module.exports = { leerId, revisarTextos, esOpcion, leerPublicacion, textoOpcional };

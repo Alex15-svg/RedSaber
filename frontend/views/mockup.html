@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="es" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RedSaber — Comunidad académica</title>
+<meta name="description" content="Mockup visual de RedSaber: plataforma de conocimiento y comunidad de la sede.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Archivo+Narrow:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../css/redsaber.css" rel="stylesheet">
+<script>
+  // Aplica el tema guardado antes de pintar, para evitar un parpadeo.
+  try {
+    const guardado = localStorage.getItem('rs-tema');
+    const oscuro = guardado ? guardado === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-bs-theme', oscuro ? 'dark' : 'light');
+  } catch (e) { /* sin almacenamiento: queda el tema claro */ }
+</script>
+</head>
+<body class="rs-body">
+
+<!-- Glifo provisional de RedSaber e íconos. Para cambiar el glifo, reemplazar solo el <symbol id="rs-glifo">. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="rs-glifo" viewBox="0 0 48 48">
+    <rect width="48" height="48" fill="#781F2D"/>
+    <g fill="#A13B48" transform="translate(1.6 1.2)">
+      <path d="M12 10h19v16h-5l9 12h-8l-9-12h-1v12h-5z"/>
+    </g>
+    <path fill="#F0EDE5" d="M12 10h19v16h-5l9 12h-8l-9-12h-1v12h-5zm7 6v4h5v-4z"/>
+    <rect x="34" y="8" width="6" height="6" fill="#F0EDE5"/>
+  </symbol>
+  <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></symbol>
+  <symbol id="i-explorar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+  <symbol id="i-avisos" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+  <symbol id="i-mensajes" viewBox="0 0 24 24"><path d="M3 4h18v13H8l-5 4z"/></symbol>
+  <symbol id="i-guardados" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+  <symbol id="i-documentos" viewBox="0 0 24 24"><path d="M6 2h8l5 5v15H6zM14 2v6h5M9 13h7M9 17h7"/></symbol>
+  <symbol id="i-cursos" viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 9h18M8 5v14"/></symbol>
+  <symbol id="i-talleres" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 2v4M16 2v4M4 9h16"/></symbol>
+  <symbol id="i-perfil" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-admin" viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3 8-8 11-5-3-8-6-8-11V5zM9 12l2 2 4-5"/></symbol>
+  <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+</svg>
+
+<a class="rs-skip" href="#contenido">Saltar al contenido</a>
+
+<div class="rs-layout">
+  <!-- Cabecera lateral -->
+  <aside class="rs-masthead rs-paper-texture" aria-label="Navegación principal">
+    <a class="rs-brand" href="#" data-action="ir" data-pagina="inicio">
+      <svg class="rs-brand-symbol" role="img" aria-label="Glifo de RedSaber"><use href="#rs-glifo"/></svg>
+      <span class="rs-brand-name">Red<span>Saber</span></span>
+    </a>
+    <div class="rs-brand-tagline">COMUNIDAD ACADÉMICA · SEDE · Nº 01</div>
+
+    <nav class="rs-navbar" id="nav"></nav>
+
+    <button class="rs-button rs-button--publish" type="button" data-action="publicar-foco">
+      <span aria-hidden="true">✎</span><span class="rs-publish-text">Publicar</span>
+    </button>
+    <button class="rs-theme-toggle rs-menu-toggle" type="button" data-action="menu" aria-label="Abrir menú de secciones">☰ Menú</button>
+    <button class="rs-theme-toggle" type="button" data-action="tema" aria-label="Cambiar tema claro u oscuro">
+      <span aria-hidden="true">◐</span><span class="rs-theme-text" id="temaTexto">Tema oscuro</span>
+    </button>
+    <button class="rs-account" type="button" data-action="cuenta" id="cuenta"></button>
+  </aside>
+
+  <!-- Contenido -->
+  <main class="rs-main" id="contenido" tabindex="-1">
+    <header class="rs-pagehead">
+      <div class="rs-pagehead-row">
+        <div>
+          <div class="rs-kicker" id="pageKicker">Nº 01 · Portada</div>
+          <h1 class="rs-display rs-misprint" id="pageTitle">Portada</h1>
+        </div>
+        <div class="d-flex gap-2 align-items-center pb-3">
+          <span class="rs-meta d-none d-md-inline" id="fecha"></span>
+          <button class="rs-button rs-button--ghost rs-button--sm" type="button" data-action="sesion" id="btnSesion">Ingresar</button>
+        </div>
+      </div>
+      <div class="rs-pagehead-rules"></div>
+    </header>
+    <div id="vista"></div>
+  </main>
+
+  <!-- Columna lateral derecha -->
+  <aside class="rs-aside" aria-label="Índice y accesos">
+    <div class="rs-search mb-4">
+      <svg aria-hidden="true"><use href="#i-buscar"/></svg>
+      <label class="visually-hidden" for="buscar">Buscar en RedSaber</label>
+      <input class="rs-input" id="buscar" type="search" placeholder="Buscar en RedSaber">
+    </div>
+    <section class="rs-aside-block">
+      <h2 class="rs-h3 mb-2">Temas de la semana</h2>
+      <ol class="rs-aside-list" id="temas"></ol>
+    </section>
+    <section class="rs-aside-block">
+      <h2 class="rs-h3 mb-2">Accesos</h2>
+      <ol class="rs-aside-list">
+        <li><button type="button" data-action="ir" data-pagina="documentos"><strong>Biblioteca</strong><small>Material por área</small></button></li>
+        <li><button type="button" data-action="ir" data-pagina="cursos"><strong>Cursos y grupos</strong><small>Aprender en comunidad</small></button></li>
+        <li><button type="button" data-action="ir" data-pagina="talleres"><strong>Talleres de la sede</strong><small>Inscritos y capacidad</small></button></li>
+      </ol>
+    </section>
+    <p class="rs-caption">RedSaber · Mockup visual de referencia.<br>Datos de demostración en memoria: se reinician al recargar.</p>
+  </aside>
+</div>
+
+<button class="rs-button rs-fab" type="button" data-action="publicar-foco" aria-label="Publicar">✎</button>
+
+<!-- Modal reutilizable (Bootstrap 5) -->
+<div class="modal fade rs-modal" id="modal" tabindex="-1" aria-labelledby="modalTitulo" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitulo">RedSaber</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="modalCuerpo"></div>
+    </div>
+  </div>
+</div>
+<div class="rs-toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ===== Datos de demostración (en memoria) ===== */
+const HOY = Date.now(), H = 3600000;
+const CARRERAS = ['Ingeniería en Informática', 'Administración', 'Electricidad', 'Construcción'];
+const ROLES = { estudiante: 'Estudiante', docente: 'Docente', administrador: 'Administración' };
+const TIPOS = { pregunta: 'Pregunta', solucion: 'Solución', guia: 'Guía docente' };
+const db = {
+  usuarios: [
+    { id: 1, nombre: 'Camila Torres', correo: 'camila@inacapmail.cl', clave: 'redsaber2026', carrera: CARRERAS[0], rol: 'estudiante', bio: 'Tercer año. Bases de datos y desarrollo web.', publico: false },
+    { id: 2, nombre: 'Diego Muñoz', correo: 'diego@inacapmail.cl', clave: 'redsaber2026', carrera: CARRERAS[0], rol: 'docente', bio: 'Docente de Ingeniería de Software y Bases de Datos.', publico: true },
+    { id: 3, nombre: 'Valentina Rojas', correo: 'valentina@inacapmail.cl', clave: 'redsaber2026', carrera: CARRERAS[0], rol: 'estudiante', bio: 'Redes y ciberseguridad.', publico: false },
+    { id: 4, nombre: 'Administración', correo: 'admin@inacapmail.cl', clave: 'redsaber2026', carrera: 'Sede', rol: 'administrador', bio: 'Moderación de la comunidad.', publico: false }
+  ],
+  publicaciones: [
+    { id: 1, autor: 2, tipo: 'guia', titulo: 'Guía 3: modelado entidad-relación', texto: 'Ejercicios para pasar de un caso real a un modelo ER. Incluye solución comentada al final.', carrera: CARRERAS[0], asignatura: 'Bases de datos', seccion: 'TI3043', verificada: true, fecha: HOY - 30 * H, comentarios: [], guardadaPor: [], reportes: 0 },
+    { id: 2, autor: 1, tipo: 'pregunta', titulo: '¿Clave primaria compuesta o clave única?', texto: 'Estoy repasando normalización y no me queda clara la diferencia práctica entre ambas.', carrera: CARRERAS[0], asignatura: 'Bases de datos', seccion: 'TI3043', fecha: HOY - 6 * H, comentarios: [{ autor: 2, texto: 'La primaria identifica cada fila; una UNIQUE impide duplicados y puede haber varias por tabla.' }], guardadaPor: [], reportes: 0 },
+    { id: 3, autor: 3, tipo: 'solucion', titulo: 'Solución ejercicio 2 de subredes', texto: 'Dividí 192.168.10.0/24 en 4 subredes /26. Dejo el cálculo de rangos y broadcast paso a paso.', carrera: CARRERAS[0], asignatura: 'Redes', seccion: 'TI2051', fecha: HOY - 2 * H, comentarios: [], guardadaPor: [], reportes: 0 }
+  ],
+  documentos: [
+    { id: 1, titulo: 'Introducción a bases de datos', area: 'Bases de datos', formato: 'PDF', descripcion: 'Conceptos iniciales, tablas y relaciones.' },
+    { id: 2, titulo: 'Guía práctica de Python', area: 'Programación', formato: 'PDF', descripcion: 'Variables, funciones y estructuras de control.' },
+    { id: 3, titulo: 'Normas de seguridad en laboratorio', area: 'Electricidad', formato: 'PDF', descripcion: 'Procedimientos y equipos de protección.' }
+  ],
+  documentosGuardados: [],
+  grupos: [{ id: 1, nombre: 'Estudio de Bases de Datos', integrantes: [1, 3] }],
+  cursos: [
+    { id: 1, nombre: 'Fundamentos de Python', docente: 2, objetivo: 'Curso introductorio con certificado externo.', estado: 'abierto', inscritos: [1], interesados: [3] },
+    { id: 2, nombre: 'SQL avanzado', docente: 2, objetivo: 'Consultas, índices y transacciones.', estado: 'solicitado', inscritos: [], interesados: [1, 3] }
+  ],
+  talleres: [
+    { id: 1, nombre: 'Empleabilidad TI', capacidad: 30, inscritos: 18, fecha: '18 NOV' },
+    { id: 2, nombre: 'Git y GitHub desde cero', capacidad: 25, inscritos: 25, fecha: '21 NOV' },
+    { id: 3, nombre: 'Robótica educativa', capacidad: 20, inscritos: 7, fecha: '26 NOV' }
+  ],
+  chats: [
+    { id: 1, tipo: 'individual', nombre: 'Diego Muñoz', participantes: [1, 2], mensajes: [{ autor: 2, texto: 'Hola Camila, ¿en qué te ayudo con la guía 3?', fecha: HOY - H }] },
+    { id: 2, tipo: 'grupal', nombre: 'Estudio Redes', participantes: [3], mensajes: [] }
+  ],
+  invitaciones: [{ id: 1, chat: 2, de: 3, para: 1, estado: 'pendiente' }],
+  avisos: [{ para: 1, texto: 'Diego Muñoz comentó tu pregunta.', fecha: HOY - 5 * H }],
+  apelaciones: [],
+  umbral: 3,
+  siguiente: 100
+};
+
+/* ===== Estado de la interfaz ===== */
+let actual = null, pagina = 'inicio', filtro = 'todos', chatId = 1, consulta = '';
+const PAGINAS = [
+  ['inicio', 'Portada'], ['explorar', 'Explorar'], ['avisos', 'Avisos'], ['mensajes', 'Mensajes'],
+  ['guardados', 'Guardados'], ['documentos', 'Biblioteca'], ['cursos', 'Cursos'], ['talleres', 'Talleres'],
+  ['perfil', 'Perfil'], ['admin', 'Moderación']
+];
+const SOLO_ESCRITORIO = ['avisos', 'guardados', 'documentos', 'cursos', 'admin']; // en móvil se llega desde otros accesos
+const PRIVADAS = ['avisos', 'mensajes', 'guardados', 'perfil', 'admin'];
+
+/* ===== Utilidades ===== */
+const $ = (s) => document.querySelector(s);
+const esc = (t = '') => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const yo = () => db.usuarios.find((u) => u.id === actual);
+const usuario = (id) => db.usuarios.find((u) => u.id === id) || { nombre: 'Cuenta eliminada', rol: 'estudiante', correo: '' };
+const alias = (u) => '@' + (u.correo || 'cuenta').split('@')[0];
+const iniciales = (n) => n.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+const fecha = (f) => new Date(f).toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }).toUpperCase();
+const hora = (f) => new Date(f).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+const vacio = (titulo, texto) => `<div class="rs-empty"><p class="rs-h2">${titulo}</p><p>${texto}</p></div>`;
+const avatar = (u, extra = '') => `<span class="rs-avatar rs-avatar--${u.rol} ${extra}" aria-hidden="true">${u.foto ? `<img src="${u.foto}" alt="">` : iniciales(u.nombre)}</span>`;
+const modal = new bootstrap.Modal('#modal');
+let temporizador;
+
+function avisar(texto) {
+  const t = $('#toast');
+  t.textContent = texto;
+  t.hidden = false;
+  clearTimeout(temporizador);
+  temporizador = setTimeout(() => { t.hidden = true; }, 2600);
+}
+function abrirModal(titulo, html) {
+  $('#modalTitulo').textContent = titulo;
+  $('#modalCuerpo').innerHTML = html;
+  modal.show();
+}
+function notificar(para, texto) {
+  if (para !== actual) db.avisos.push({ para, texto, fecha: Date.now() });
+}
+function exigirSesion() {
+  if (yo()) return true;
+  abrirAcceso('ingresar');
+  return false;
+}
+function campo(nombre, etiqueta, entrada, ayuda = '') {
+  return `<div class="rs-field"><label class="rs-label" for="f-${nombre}">${etiqueta}</label>${entrada}${ayuda ? `<span class="rs-hint">${ayuda}</span>` : ''}<span class="rs-error" id="e-${nombre}" hidden></span></div>`;
+}
+function marcarError(form, nombre, texto) {
+  const entrada = form.querySelector(`[name="${nombre}"]`), error = form.querySelector(`#e-${nombre}`);
+  entrada.classList.add('is-invalid');
+  entrada.setAttribute('aria-invalid', 'true');
+  error.textContent = texto;
+  error.hidden = false;
+  return false;
+}
+
+/* ===== Pintado general ===== */
+function render() {
+  const [, seccion] = PAGINAS.find(([p]) => p === pagina);
+  const numero = String(PAGINAS.findIndex(([p]) => p === pagina) + 1).padStart(2, '0');
+  $('#pageKicker').textContent = `Nº ${numero} · ${seccion}`;
+  $('#pageTitle').textContent = seccion;
+  $('#fecha').textContent = new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+  $('#btnSesion').textContent = yo() ? 'Cerrar sesión' : 'Ingresar';
+  $('#temaTexto').textContent = document.documentElement.dataset.bsTheme === 'dark' ? 'Tema claro' : 'Tema oscuro';
+  $('#nav').innerHTML = PAGINAS
+    .filter(([p]) => p !== 'admin' || yo()?.rol === 'administrador')
+    .map(([p, nombre], i) => `<button class="rs-nav-link" type="button" data-action="ir" data-pagina="${p}" ${p === pagina ? 'aria-current="page"' : ''} ${SOLO_ESCRITORIO.includes(p) ? 'data-movil="no"' : ''}>
+      <span class="rs-nav-index">${String(i + 1).padStart(2, '0')}</span><svg aria-hidden="true"><use href="#i-${p}"/></svg><span class="rs-nav-text">${nombre}</span></button>`).join('');
+  const u = yo();
+  $('#cuenta').innerHTML = u
+    ? `${avatar(u, 'rs-avatar--sm')}<span class="rs-account-text"><strong>${esc(u.nombre)}</strong><small>${alias(u)} · ${ROLES[u.rol]}</small></span>`
+    : `<span class="rs-avatar rs-avatar--sm" aria-hidden="true">RS</span><span class="rs-account-text"><strong>Visitante</strong><small>Ingresa con tu cuenta</small></span>`;
+  $('#temas').innerHTML = ['Bases de datos', 'Redes', 'Programación', 'Ingeniería de software']
+    .map((t) => `<li><button type="button" data-action="tema-buscar" data-valor="${t}"><strong>${t}</strong><small>Ver publicaciones</small></button></li>`).join('');
+  $('#vista').innerHTML = VISTAS[pagina]();
+}
+
+function ir(p) {
+  if (PRIVADAS.includes(p) && !exigirSesion()) return;
+  pagina = p;
+  render();
+  $('#contenido').focus({ preventScroll: true });
+  window.scrollTo({ top: 0 });
+}
+
+/* ===== Entradas del feed ===== */
+function entrada(p) {
+  const u = usuario(p.autor), mia = p.autor === actual, guardada = p.guardadaPor.includes(actual);
+  const clases = ['rs-entry', p.tipo === 'guia' ? 'rs-entry--guia' : '', p.deshabilitada ? 'rs-entry--disabled' : ''].join(' ');
+  return `<article class="${clases}" aria-labelledby="t-${p.id}">
+    ${avatar(u)}
+    <div>
+      <div class="rs-entry-head">
+        <strong>${esc(u.nombre)}</strong>
+        ${u.rol === 'docente' ? '<span class="rs-verified">■ Docente</span>' : ''}
+        <span class="rs-meta">${alias(u)} · ${fecha(p.fecha)}</span>
+      </div>
+      <div class="rs-tags">
+        <span class="rs-tag ${p.tipo === 'guia' ? 'rs-tag--accent' : ''}">${TIPOS[p.tipo]}</span>
+        <span class="rs-tag rs-tag--soft">${esc(p.asignatura)}</span>
+        <span class="rs-tag rs-tag--soft">${esc(p.seccion)}</span>
+        ${p.verificada ? '<span class="rs-tag">✓ Verificada</span>' : ''}
+        ${p.deshabilitada ? '<span class="rs-tag rs-tag--accent">Deshabilitada</span>' : ''}
+      </div>
+      <h2 class="rs-entry-title" id="t-${p.id}">${esc(p.titulo)}</h2>
+      <p class="rs-entry-text">${esc(p.texto)}</p>
+      <p class="rs-meta mb-0">${esc(p.carrera)}</p>
+      ${p.comentarios.length ? `<div class="rs-comments">${p.comentarios.map((c) => `<p><strong>${esc(usuario(c.autor).nombre)}:</strong> ${esc(c.texto)}</p>`).join('')}</div>` : ''}
+      <div class="rs-actions">
+        <button class="rs-action" type="button" data-action="comentar" data-id="${p.id}">Comentar · ${p.comentarios.length}</button>
+        <button class="rs-action" type="button" data-action="guardar" data-id="${p.id}" aria-pressed="${guardada}">${guardada ? '■ Guardada' : '□ Guardar'}</button>
+        ${mia ? `<button class="rs-action" type="button" data-action="editar" data-id="${p.id}">Editar</button>
+                 <button class="rs-action" type="button" data-action="borrar" data-id="${p.id}">Borrar</button>`
+              : `<button class="rs-action" type="button" data-action="reportar" data-id="${p.id}">Reportar</button>`}
+      </div>
+    </div>
+  </article>`;
+}
+
+function formularioPublicar() {
+  const u = yo();
+  if (!u) return `<section class="rs-compose"><div class="rs-compose-head"><span class="rs-label">Nueva entrada</span></div>
+    <div class="rs-compose-body d-flex justify-content-between align-items-center gap-3 flex-wrap"><p class="mb-0">Ingresa con tu correo institucional para publicar dudas y soluciones.</p>
+    <button class="rs-button" type="button" data-action="sesion">Ingresar</button></div></section>`;
+  const tipos = u.rol === 'docente' ? ['guia'] : ['pregunta', 'solucion'];
+  return `<section class="rs-compose" aria-label="Publicar">
+    <div class="rs-compose-head"><span class="rs-label">Nueva entrada</span><span class="rs-meta" style="color:inherit">${u.rol === 'docente' ? 'GUÍA DOCENTE' : 'DUDA O SOLUCIÓN'}</span></div>
+    <form class="rs-compose-body rs-form" data-form="publicar" novalidate>
+      ${campo('titulo', 'Título', '<input class="rs-input" id="f-titulo" name="titulo" maxlength="200" placeholder="¿Qué necesitas resolver?">')}
+      ${campo('texto', 'Descripción', '<textarea class="rs-input" id="f-texto" name="texto" maxlength="5000" placeholder="Explica el contexto, lo que intentaste y dónde te trabaste."></textarea>')}
+      <div class="row g-2">
+        <div class="col-6 col-lg-3">${campo('tipo', 'Tipo', `<select class="rs-input" id="f-tipo" name="tipo">${tipos.map((t) => `<option value="${t}">${TIPOS[t]}</option>`).join('')}</select>`)}</div>
+        <div class="col-6 col-lg-3">${campo('carrera', 'Carrera', `<select class="rs-input" id="f-carrera" name="carrera">${CARRERAS.map((c) => `<option ${c === u.carrera ? 'selected' : ''}>${c}</option>`).join('')}</select>`)}</div>
+        <div class="col-6 col-lg-3">${campo('asignatura', 'Asignatura', '<input class="rs-input" id="f-asignatura" name="asignatura" maxlength="120">')}</div>
+        <div class="col-6 col-lg-3">${campo('seccion', 'Sección', '<input class="rs-input" id="f-seccion" name="seccion" maxlength="30" placeholder="TI3043">')}</div>
+      </div>
+      <div class="d-flex justify-content-end"><button class="rs-button" type="submit">Publicar</button></div>
+    </form>
+  </section>`;
+}
+
+/* ===== Vistas ===== */
+const VISTAS = {
+  inicio() {
+    const lista = db.publicaciones.filter((p) => !p.deshabilitada && (filtro === 'todos' || p.tipo === filtro)).sort((a, b) => b.fecha - a.fecha);
+    const tab = (v, t) => `<button class="rs-tab" type="button" role="tab" data-action="filtro" data-valor="${v}" aria-selected="${filtro === v}">${t}</button>`;
+    return `<div class="rs-tabs" role="tablist">${tab('todos', 'Todo')}${tab('pregunta', 'Preguntas')}${tab('solucion', 'Soluciones')}${tab('guia', 'Guías docentes')}</div>
+      ${formularioPublicar()}
+      <div id="feed">${lista.map(entrada).join('') || vacio('Sin entradas', 'Todavía no hay publicaciones en esta sección.')}</div>`;
+  },
+  explorar() {
+    return `<section class="rs-section">
+      <div class="row g-3 mb-2">
+        <div class="col-md-6">${campo('q', 'Buscar', `<input class="rs-input" id="f-q" name="q" type="search" data-filtro value="${esc(consulta)}" placeholder="Título, asignatura o persona">`)}</div>
+        <div class="col-6 col-md-3">${campo('fc', 'Carrera', `<select class="rs-input" id="f-fc" name="fc" data-filtro><option value="">Todas</option>${CARRERAS.map((c) => `<option>${c}</option>`).join('')}</select>`)}</div>
+        <div class="col-6 col-md-3">${campo('ft', 'Tipo', `<select class="rs-input" id="f-ft" name="ft" data-filtro><option value="">Todos</option>${Object.entries(TIPOS).map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select>`)}</div>
+      </div></section>
+      <div id="resultados">${resultadosExplorar()}</div>
+      <section class="rs-section"><h2 class="rs-h3 rs-panel--rule">Personas</h2>
+      ${db.usuarios.filter((u) => u.id !== actual).map((u) => `<div class="rs-list-row">${avatar(u, 'rs-avatar--sm')}<div><strong>${esc(u.nombre)}</strong><div class="rs-meta">${esc(u.carrera)} · ${ROLES[u.rol]}</div></div>
+        <button class="rs-button rs-button--ghost rs-button--sm" type="button" data-action="invitar" data-id="${u.id}">Invitar a chat</button></div>`).join('')}</section>`;
+  },
+  avisos() {
+    const mios = db.avisos.filter((a) => a.para === actual).sort((a, b) => b.fecha - a.fecha);
+    return `<section class="rs-section">${mios.map((a) => `<div class="rs-list-row"><span class="rs-tag rs-tag--accent">Aviso</span><div>${esc(a.texto)}</div><span class="rs-meta">${fecha(a.fecha)}</span></div>`).join('') || vacio('Al día', 'No tienes avisos nuevos.')}</section>`;
+  },
+  mensajes() {
+    const mios = db.chats.filter((c) => c.participantes.includes(actual));
+    const chat = mios.find((c) => c.id === chatId) || mios[0];
+    const pendientes = db.invitaciones.filter((i) => i.para === actual && i.estado === 'pendiente');
+    return `<section class="rs-section">
+      ${pendientes.map((i) => `<div class="rs-notice d-flex justify-content-between align-items-center gap-2 flex-wrap"><span><strong>Invitación</strong> · ${esc(usuario(i.de).nombre)} te invitó al chat ${db.chats.find((c) => c.id === i.chat).tipo} «${esc(db.chats.find((c) => c.id === i.chat).nombre)}».</span>
+        <span class="d-flex gap-2"><button class="rs-button rs-button--sm" type="button" data-action="aceptar" data-id="${i.id}">Aceptar</button><button class="rs-button rs-button--ghost rs-button--sm" type="button" data-action="rechazar" data-id="${i.id}">Rechazar</button></span></div>`).join('')}
+      <div class="d-flex justify-content-end mb-3"><button class="rs-button" type="button" data-action="nuevo-chat">+ Nuevo chat</button></div>
+      <div class="rs-chat">
+        <div class="rs-chat-list">${mios.map((c) => `<button class="rs-chat-item" type="button" data-action="chat" data-id="${c.id}" aria-current="${chat && c.id === chat.id}"><strong>${esc(c.nombre)}</strong><span class="rs-meta d-block">${c.tipo} · ${c.participantes.length} personas</span></button>`).join('')}</div>
+        <div class="rs-chat-window">${chat ? `<div class="rs-chat-head"><strong class="rs-h3 mb-0">${esc(chat.nombre)}</strong><span class="rs-tag">${chat.tipo}</span></div>
+          <div class="rs-messages" id="mensajes">${chat.mensajes.map((m) => `<div class="rs-bubble ${m.autor === actual ? 'rs-bubble--mine' : ''}">${esc(m.texto)}<span class="rs-meta">${esc(usuario(m.autor).nombre)} · ${hora(m.fecha)}</span></div>`).join('') || '<p class="rs-muted">Aún no hay mensajes. Escribe el primero.</p>'}</div>
+          <form class="rs-chat-send" data-form="mensaje"><label class="visually-hidden" for="f-msj">Mensaje</label><input class="rs-input" id="f-msj" name="texto" autocomplete="off" placeholder="Escribe un mensaje…"><button class="rs-button" type="submit">Enviar</button></form>`
+          : vacio('Sin chats', 'Invita a alguien desde Explorar o crea un chat nuevo.')}</div>
+      </div></section>`;
+  },
+  guardados() {
+    const pubs = db.publicaciones.filter((p) => p.guardadaPor.includes(actual) && !p.deshabilitada);
+    const docs = db.documentos.filter((d) => db.documentosGuardados.some((g) => g.usuario === actual && g.doc === d.id));
+    return `<section class="rs-section pb-0"><p class="rs-notice mb-0"><strong>Lista privada</strong> · Solo tú ves lo que guardas.</p></section>
+      ${pubs.map(entrada).join('') || vacio('Sin publicaciones guardadas', 'Usa «Guardar» en cualquier entrada.')}
+      <section class="rs-section"><h2 class="rs-h3 rs-panel--rule">Documentos</h2>${docs.map((d) => `<div class="rs-list-row"><span class="rs-tag">${d.formato}</span><div><strong>${esc(d.titulo)}</strong><div class="rs-meta">${esc(d.area)}</div></div></div>`).join('') || '<p class="rs-muted">No has guardado documentos.</p>'}</section>`;
+  },
+  documentos() {
+    return `<section class="rs-section"><div class="row g-3">${db.documentos.map((d, i) => `<div class="col-md-6"><article class="rs-panel ${i === 0 ? 'rs-panel--ink rs-paper-texture' : ''} h-100">
+      <div class="d-flex justify-content-between"><span class="rs-kicker">${esc(d.area)}</span><span class="rs-tag">${d.formato}</span></div>
+      <h2 class="rs-h2 mt-2">${esc(d.titulo)}</h2><p class="${i === 0 ? '' : 'rs-muted'}">${esc(d.descripcion)}</p>
+      <div class="d-flex gap-2 flex-wrap"><button class="rs-button rs-button--sm" type="button" data-action="leer" data-id="${d.id}">Leer</button><button class="rs-button rs-button--ghost rs-button--sm ${i === 0 ? 'text-light border-light' : ''}" type="button" data-action="guardar-doc" data-id="${d.id}">Guardar</button></div>
+    </article></div>`).join('')}</div></section>`;
+  },
+  cursos() {
+    const u = yo();
+    return `<section class="rs-section">
+      <div class="d-flex justify-content-between align-items-end gap-2 flex-wrap mb-3"><h2 class="rs-h2 mb-0">Cursos</h2>${u?.rol === 'estudiante' ? '<button class="rs-button rs-button--sm" type="button" data-action="solicitar-curso">Solicitar curso</button>' : ''}</div>
+      ${db.cursos.map((c) => `<article class="rs-panel"><div class="d-flex justify-content-between gap-2 flex-wrap"><h3 class="rs-h3 mb-1">${esc(c.nombre)}</h3><span class="rs-tag ${c.estado === 'abierto' ? 'rs-tag--accent' : ''}">${c.estado}</span></div>
+        <p class="rs-muted mb-2">${esc(c.objetivo)} · Docente: ${esc(usuario(c.docente).nombre)}</p>
+        <p class="rs-meta">${c.inscritos.length} INSCRITOS · ${c.interesados.length} INTERESADOS</p>
+        ${c.estado === 'abierto' && u?.rol === 'estudiante' && !c.inscritos.includes(u.id) ? `<button class="rs-button rs-button--sm" type="button" data-action="integrarse" data-id="${c.id}">Integrarme</button>` : ''}
+        ${u?.id === c.docente ? `<button class="rs-button rs-button--ghost rs-button--sm" type="button" data-action="estado-curso" data-id="${c.id}">${c.estado === 'abierto' ? 'Cerrar ingreso' : 'Abrir curso'}</button>` : ''}
+      </article>`).join('')}
+      <h2 class="rs-h2 mt-4 mb-3">Grupos de estudio</h2>
+      ${db.grupos.map((g) => `<div class="rs-list-row"><span class="rs-stat" style="font-size:2rem">${g.integrantes.length}</span><div><strong>${esc(g.nombre)}</strong><div class="rs-meta">INTEGRANTES</div></div>
+        <button class="rs-button rs-button--ghost rs-button--sm" type="button" data-action="unirse" data-id="${g.id}">Unirme</button></div>`).join('')}
+    </section>`;
+  },
+  talleres() {
+    return `<section class="rs-section"><p class="rs-muted">Talleres de la sede con inscritos y capacidad actual.</p><div class="row g-3">
+      ${db.talleres.map((t) => { const lleno = t.inscritos >= t.capacidad; return `<div class="col-md-6 col-xl-4"><article class="rs-panel h-100">
+        <div class="d-flex justify-content-between"><span class="rs-meta">${t.fecha}</span>${lleno ? '<span class="rs-tag rs-tag--accent">Sin cupos</span>' : ''}</div>
+        <h2 class="rs-h3 mt-2">${esc(t.nombre)}</h2>
+        <div class="d-flex align-items-baseline gap-2"><span class="rs-stat">${t.inscritos}</span><span class="rs-meta">/ ${t.capacidad} CUPOS</span></div>
+        <div class="rs-meter ${lleno ? 'rs-meter--full' : ''}" role="img" aria-label="${t.inscritos} de ${t.capacidad} cupos ocupados"><span style="width:${Math.min(100, (t.inscritos / t.capacidad) * 100)}%"></span></div>
+        <p class="rs-meta mt-2 mb-0">${Math.max(0, t.capacidad - t.inscritos)} CUPOS DISPONIBLES</p>
+      </article></div>`; }).join('')}</div></section>`;
+  },
+  perfil() {
+    const u = yo(), mias = db.publicaciones.filter((p) => p.autor === u.id).sort((a, b) => b.fecha - a.fecha);
+    return `<div class="rs-cover rs-paper-texture rs-torn" style="${u.encabezado ? `background-image:url('${u.encabezado}')` : ''}"><span class="rs-cover-word" aria-hidden="true">${esc(u.nombre.split(' ')[0])}</span></div>
+      <div class="rs-profile-head">${avatar(u, 'rs-avatar--lg')}<button class="rs-button rs-button--ghost rs-button--sm mb-2" type="button" data-action="editar-perfil">Editar perfil</button></div>
+      <section class="rs-section">
+        <h2 class="rs-h2 mb-1">${esc(u.nombre)}</h2><p class="rs-meta">${alias(u)} · ${u.publico ? esc(u.correo) : 'CORREO PRIVADO'}</p>
+        <p>${esc(u.bio)}</p>
+        <div class="rs-tags"><span class="rs-tag rs-tag--accent">${ROLES[u.rol]}</span><span class="rs-tag">${esc(u.carrera)}</span><span class="rs-tag rs-tag--soft">${mias.length} publicaciones</span></div>
+      </section>
+      <h2 class="rs-h3 rs-section pb-0 mb-0">Mis publicaciones</h2>
+      ${mias.map(entrada).join('') || vacio('Sin publicaciones', 'Lo que publiques aparecerá aquí, con opciones para editar o borrar.')}`;
+  },
+  admin() {
+    const reportadas = db.publicaciones.filter((p) => p.reportes > 0 || p.deshabilitada);
+    return `<section class="rs-section"><div class="row g-3 mb-3">
+      <div class="col-sm-4"><div class="rs-panel rs-panel--ink rs-paper-texture h-100"><div class="rs-stat">${db.publicaciones.filter((p) => p.deshabilitada).length}</div><div class="rs-meta">DESHABILITADAS</div></div></div>
+      <div class="col-sm-4"><div class="rs-panel h-100"><div class="rs-stat">${db.apelaciones.filter((a) => a.estado === 'pendiente').length}</div><div class="rs-meta">APELACIONES PENDIENTES</div></div></div>
+      <div class="col-sm-4"><form class="rs-panel h-100 rs-form" data-form="umbral">${campo('umbral', 'Reportes para deshabilitar', `<input class="rs-input" id="f-umbral" name="umbral" type="number" min="1" value="${db.umbral}">`)}<button class="rs-button rs-button--sm" type="submit">Guardar</button></form></div>
+    </div>
+    <h2 class="rs-h3 rs-panel--rule">Publicaciones reportadas</h2>
+    ${reportadas.map((p) => `<div class="rs-list-row"><span class="rs-tag ${p.deshabilitada ? 'rs-tag--accent' : ''}">${p.reportes} rep.</span><div><strong>${esc(p.titulo)}</strong><div class="rs-meta">${esc(usuario(p.autor).nombre)} · ${p.deshabilitada ? 'DESHABILITADA' : 'ACTIVA'}</div></div>
+      ${p.deshabilitada ? `<button class="rs-button rs-button--sm" type="button" data-action="rehabilitar" data-id="${p.id}">Rehabilitar</button>` : ''}</div>`).join('') || '<p class="rs-muted">No hay publicaciones reportadas.</p>'}
+    <h2 class="rs-h3 rs-panel--rule mt-4">Usuarios</h2>
+    <div class="table-responsive"><table class="rs-table"><thead><tr><th scope="col">Nombre</th><th scope="col">Rol</th><th scope="col">Correo</th></tr></thead><tbody>
+      ${db.usuarios.map((u) => `<tr><td>${esc(u.nombre)}</td><td><span class="rs-tag">${ROLES[u.rol]}</span></td><td class="rs-meta">${esc(u.correo)}</td></tr>`).join('')}
+    </tbody></table></div></section>`;
+  }
+};
+
+function resultadosExplorar() {
+  const q = consulta.toLowerCase(), c = $('#f-fc')?.value || '', t = $('#f-ft')?.value || '';
+  const lista = db.publicaciones.filter((p) => !p.deshabilitada
+    && (!q || [p.titulo, p.texto, p.asignatura, usuario(p.autor).nombre].join(' ').toLowerCase().includes(q))
+    && (!c || p.carrera === c) && (!t || p.tipo === t));
+  return lista.map(entrada).join('') || vacio('Sin resultados', 'Prueba con otra palabra o quita los filtros.');
+}
+
+/* ===== Modales: acceso, edición y chats ===== */
+function abrirAcceso(modo) {
+  const tab = (m, t) => `<button class="rs-tab" type="button" role="tab" data-action="acceso" data-valor="${m}" aria-selected="${modo === m}">${t}</button>`;
+  const correo = campo('correo', 'Correo institucional', '<input class="rs-input" id="f-correo" name="correo" type="email" autocomplete="username" placeholder="nombre@inacapmail.cl">');
+  const formularios = {
+    ingresar: `<form class="rs-form" data-form="ingresar" novalidate>${correo}${campo('clave', 'Contraseña', '<input class="rs-input" id="f-clave" name="clave" type="password" autocomplete="current-password">')}
+      <button class="rs-button rs-button--block" type="submit">Ingresar</button>
+      <p class="rs-caption mb-0">Cuentas de demostración (contraseña redsaber2026): camila@ · diego@ · admin@inacapmail.cl</p></form>`,
+    crear: `<form class="rs-form" data-form="crear" novalidate>${campo('nombre', 'Nombre completo', '<input class="rs-input" id="f-nombre" name="nombre" autocomplete="name">')}${correo}
+      ${campo('clave', 'Contraseña', '<input class="rs-input" id="f-clave" name="clave" type="password" autocomplete="new-password">', 'Mínimo 8 caracteres.')}
+      ${campo('carrera', 'Carrera', `<select class="rs-input" id="f-carrera" name="carrera">${CARRERAS.map((c) => `<option>${c}</option>`).join('')}</select>`)}
+      <button class="rs-button rs-button--block" type="submit">Crear cuenta</button><p class="rs-caption mb-0">La ocupación (estudiante o docente) se asigna según el correo.</p></form>`,
+    recuperar: `<form class="rs-form" data-form="recuperar" novalidate><p class="mb-0">Te enviaremos un enlace de un solo uso para crear una contraseña nueva.</p>${correo}
+      <button class="rs-button rs-button--block" type="submit">Enviar enlace</button></form>`
+  };
+  abrirModal('Acceso', `<div class="rs-tabs px-0 mb-3" role="tablist">${tab('ingresar', 'Ingresar')}${tab('crear', 'Crear cuenta')}${tab('recuperar', 'Recuperar')}</div>${formularios[modo]}`);
+}
+
+function abrirEdicion(p) {
+  abrirModal('Editar publicación', `<form class="rs-form" data-form="editar" data-id="${p.id}" novalidate>
+    ${campo('titulo', 'Título', `<input class="rs-input" id="f-titulo" name="titulo" maxlength="200" value="${esc(p.titulo)}">`)}
+    ${campo('texto', 'Descripción', `<textarea class="rs-input" id="f-texto" name="texto" rows="5">${esc(p.texto)}</textarea>`)}
+    <div class="d-flex gap-2 justify-content-end"><button class="rs-button rs-button--ghost" type="button" data-bs-dismiss="modal">Cancelar</button><button class="rs-button" type="submit">Guardar cambios</button></div></form>`);
+}
+
+function abrirConfirmacion(titulo, texto, accion, id) {
+  abrirModal(titulo, `<p>${texto}</p><div class="d-flex gap-2 justify-content-end"><button class="rs-button rs-button--ghost" type="button" data-bs-dismiss="modal">Cancelar</button>
+    <button class="rs-button" type="button" data-action="${accion}" data-id="${id}">Confirmar</button></div>`);
+}
+
+function abrirNuevoChat(preseleccion) {
+  const otros = db.usuarios.filter((u) => u.id !== actual && u.rol !== 'administrador');
+  abrirModal('Nuevo chat', `<form class="rs-form" data-form="nuevo-chat" novalidate>
+    ${campo('nombre', 'Nombre del chat', '<input class="rs-input" id="f-nombre" name="nombre" placeholder="Ej.: Estudio para la prueba">', 'Solo para chats grupales.')}
+    <fieldset class="rs-field"><legend class="rs-label">Invitar a</legend>${otros.map((u) => `<label class="rs-check"><input type="checkbox" name="invitados" value="${u.id}" ${u.id === preseleccion ? 'checked' : ''}> ${esc(u.nombre)} <span class="rs-meta">${ROLES[u.rol]}</span></label>`).join('')}</fieldset>
+    <span class="rs-error" id="e-invitados" hidden></span><input type="hidden" name="_" value="">
+    <p class="rs-caption mb-0">Un invitado: chat individual. Dos o más: chat grupal. Cada persona acepta o rechaza su invitación.</p>
+    <button class="rs-button rs-button--block" type="submit">Enviar invitaciones</button></form>`);
+}
+
+/* ===== Acciones de botones (delegación) ===== */
+const ACCIONES = {
+  ir: (b) => ir(b.dataset.pagina),
+  sesion: () => { if (yo()) { actual = null; pagina = 'inicio'; avisar('Sesión cerrada.'); render(); } else abrirAcceso('ingresar'); },
+  cuenta: () => (yo() ? ir('perfil') : abrirAcceso('ingresar')),
+  acceso: (b) => abrirAcceso(b.dataset.valor),
+  menu: () => abrirModal('Secciones', `<ol class="rs-aside-list">${PAGINAS.filter(([p]) => p !== 'admin' || yo()?.rol === 'administrador')
+    .map(([p, nombre]) => `<li><button type="button" data-action="ir-menu" data-pagina="${p}"><strong>${nombre}</strong></button></li>`).join('')}</ol>`),
+  'ir-menu': (b) => { modal.hide(); ir(b.dataset.pagina); },
+  tema: () => {
+    const raiz = document.documentElement, nuevo = raiz.dataset.bsTheme === 'dark' ? 'light' : 'dark';
+    raiz.setAttribute('data-bs-theme', nuevo);
+    try { localStorage.setItem('rs-tema', nuevo); } catch (e) { /* sin almacenamiento */ }
+    render();
+  },
+  filtro: (b) => { filtro = b.dataset.valor; render(); },
+  'tema-buscar': (b) => { consulta = b.dataset.valor; ir('explorar'); },
+  'publicar-foco': () => { if (pagina !== 'inicio') ir('inicio'); if (exigirSesion()) setTimeout(() => $('#f-titulo')?.focus(), 50); },
+  comentar: (b) => exigirSesion() && abrirModal('Comentar', `<form class="rs-form" data-form="comentar" data-id="${b.dataset.id}" novalidate>${campo('texto', 'Comentario', '<textarea class="rs-input" id="f-texto" name="texto" rows="4"></textarea>')}<button class="rs-button rs-button--block" type="submit">Comentar</button></form>`),
+  guardar: (b) => {
+    if (!exigirSesion()) return;
+    const p = db.publicaciones.find((x) => x.id === +b.dataset.id), ya = p.guardadaPor.includes(actual);
+    p.guardadaPor = ya ? p.guardadaPor.filter((x) => x !== actual) : [...p.guardadaPor, actual];
+    avisar(ya ? 'Quitada de tu lista privada.' : 'Guardada en tu lista privada.');
+    render();
+  },
+  'guardar-doc': (b) => {
+    if (!exigirSesion()) return;
+    if (!db.documentosGuardados.some((g) => g.usuario === actual && g.doc === +b.dataset.id)) db.documentosGuardados.push({ usuario: actual, doc: +b.dataset.id });
+    avisar('Documento guardado en tu lista privada.');
+  },
+  leer: (b) => { const d = db.documentos.find((x) => x.id === +b.dataset.id); abrirModal(d.titulo, `<p class="rs-kicker">${esc(d.area)} · ${d.formato}</p><p>${esc(d.descripcion)}</p><p class="rs-notice">Vista de lectura de demostración: aquí se mostraría el documento.</p>`); },
+  editar: (b) => abrirEdicion(db.publicaciones.find((x) => x.id === +b.dataset.id)),
+  borrar: (b) => abrirConfirmacion('Borrar publicación', 'Esta acción no se puede deshacer.', 'confirmar-borrar', b.dataset.id),
+  'confirmar-borrar': (b) => { db.publicaciones = db.publicaciones.filter((x) => x.id !== +b.dataset.id); modal.hide(); avisar('Publicación borrada.'); render(); },
+  reportar: (b) => exigirSesion() && abrirConfirmacion('Reportar publicación', 'Se revisará si incumple las normas de la comunidad. Al acumular reportes se deshabilita automáticamente.', 'confirmar-reporte', b.dataset.id),
+  'confirmar-reporte': (b) => {
+    const p = db.publicaciones.find((x) => x.id === +b.dataset.id);
+    p.reportes += 1;
+    if (p.reportes >= db.umbral && !p.deshabilitada) { p.deshabilitada = true; db.apelaciones.push({ id: db.siguiente++, publicacion: p.id, estado: 'pendiente' }); notificar(p.autor, `Tu publicación «${p.titulo}» fue deshabilitada. Puedes apelar.`); }
+    modal.hide(); avisar('Reporte registrado.'); render();
+  },
+  rehabilitar: (b) => { const p = db.publicaciones.find((x) => x.id === +b.dataset.id); p.deshabilitada = false; p.reportes = 0; db.apelaciones.forEach((a) => { if (a.publicacion === p.id) a.estado = 'aceptada'; }); avisar('Publicación rehabilitada.'); render(); },
+  invitar: (b) => exigirSesion() && abrirNuevoChat(+b.dataset.id),
+  'nuevo-chat': () => abrirNuevoChat(),
+  chat: (b) => { chatId = +b.dataset.id; render(); },
+  aceptar: (b) => responderInvitacion(+b.dataset.id, true),
+  rechazar: (b) => responderInvitacion(+b.dataset.id, false),
+  integrarse: (b) => { db.cursos.find((c) => c.id === +b.dataset.id).inscritos.push(actual); avisar('Te integraste al curso.'); render(); },
+  'estado-curso': (b) => { const c = db.cursos.find((x) => x.id === +b.dataset.id); c.estado = c.estado === 'abierto' ? 'cerrado' : 'abierto'; render(); },
+  unirse: (b) => { if (!exigirSesion()) return; const g = db.grupos.find((x) => x.id === +b.dataset.id); if (!g.integrantes.includes(actual)) g.integrantes.push(actual); avisar('Te uniste al grupo.'); render(); },
+  'solicitar-curso': () => abrirModal('Solicitar curso', `<form class="rs-form" data-form="solicitar-curso" novalidate>${campo('nombre', 'Curso', '<input class="rs-input" id="f-nombre" name="nombre">')}${campo('texto', 'Objetivo', '<textarea class="rs-input" id="f-texto" name="texto" rows="3"></textarea>')}<button class="rs-button rs-button--block" type="submit">Enviar solicitud</button></form>`),
+  'editar-perfil': () => { const u = yo(); abrirModal('Editar perfil', `<form class="rs-form" data-form="perfil" novalidate>${campo('bio', 'Presentación', `<textarea class="rs-input" id="f-bio" name="bio" rows="3">${esc(u.bio)}</textarea>`)}
+    ${campo('foto', 'Foto de perfil', '<input class="rs-input" id="f-foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp">', 'JPG, PNG o WEBP de hasta 2 MB.')}
+    ${campo('encabezado', 'Encabezado', '<input class="rs-input" id="f-encabezado" name="encabezado" type="file" accept="image/jpeg,image/png,image/webp">')}
+    <label class="rs-check"><input type="checkbox" name="publico" ${u.publico ? 'checked' : ''}> Mostrar mi correo en el perfil</label>
+    <button class="rs-button rs-button--block" type="submit">Guardar cambios</button></form>`); }
+};
+
+function responderInvitacion(id, acepta) {
+  const inv = db.invitaciones.find((i) => i.id === id && i.para === actual && i.estado === 'pendiente');
+  if (!inv) return;
+  inv.estado = acepta ? 'aceptada' : 'rechazada';
+  if (acepta) { db.chats.find((c) => c.id === inv.chat).participantes.push(actual); chatId = inv.chat; }
+  avisar(acepta ? 'Te uniste al chat.' : 'Invitación rechazada.');
+  render();
+}
+
+/* ===== Formularios (validación y envío) ===== */
+const leerImagen = (archivo) => new Promise((ok) => { if (!archivo) return ok(null); const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(archivo); });
+const FORMULARIOS = {
+  ingresar(d, f) {
+    const u = db.usuarios.find((x) => x.correo === d.get('correo').trim().toLowerCase());
+    if (!u || u.clave !== d.get('clave')) return marcarError(f, 'clave', 'Correo o contraseña incorrectos.');
+    actual = u.id; modal.hide(); avisar(`Hola, ${u.nombre.split(' ')[0]}.`); render();
+  },
+  crear(d, f) {
+    const nombre = d.get('nombre').trim(), correo = d.get('correo').trim().toLowerCase();
+    let ok = true;
+    if (!nombre) ok = marcarError(f, 'nombre', 'Escribe tu nombre.');
+    if (!correo.endsWith('@inacapmail.cl')) ok = marcarError(f, 'correo', 'Usa tu correo @inacapmail.cl.');
+    else if (db.usuarios.some((u) => u.correo === correo)) ok = marcarError(f, 'correo', 'Ese correo ya tiene una cuenta.');
+    if (d.get('clave').length < 8) ok = marcarError(f, 'clave', 'La contraseña debe tener al menos 8 caracteres.');
+    if (!ok) return;
+    const u = { id: db.siguiente++, nombre, correo, clave: d.get('clave'), carrera: d.get('carrera'), rol: 'estudiante', bio: '', publico: false };
+    db.usuarios.push(u); actual = u.id; modal.hide(); avisar('Cuenta creada como estudiante.'); render();
+  },
+  recuperar(d, f) {
+    if (!d.get('correo').trim().toLowerCase().endsWith('@inacapmail.cl')) return marcarError(f, 'correo', 'Ingresa un correo institucional.');
+    modal.hide(); avisar('Si la cuenta existe, recibirá un enlace de recuperación.');
+  },
+  publicar(d, f) {
+    let ok = true;
+    for (const [n, t] of [['titulo', 'Escribe un título.'], ['texto', 'Describe tu duda o solución.'], ['asignatura', 'Indica la asignatura.'], ['seccion', 'Indica la sección.']]) {
+      if (!d.get(n).trim()) ok = marcarError(f, n, t);
+    }
+    if (!ok) return;
+    db.publicaciones.push({ id: db.siguiente++, autor: actual, tipo: d.get('tipo'), titulo: d.get('titulo').trim(), texto: d.get('texto').trim(), carrera: d.get('carrera'), asignatura: d.get('asignatura').trim(), seccion: d.get('seccion').trim(), verificada: d.get('tipo') === 'guia', fecha: Date.now(), comentarios: [], guardadaPor: [], reportes: 0 });
+    filtro = 'todos'; avisar('Publicación creada.'); render();
+  },
+  editar(d, f) {
+    if (!d.get('titulo').trim()) return marcarError(f, 'titulo', 'El título no puede quedar vacío.');
+    const p = db.publicaciones.find((x) => x.id === +f.dataset.id);
+    p.titulo = d.get('titulo').trim(); p.texto = d.get('texto').trim(); modal.hide(); avisar('Cambios guardados.'); render();
+  },
+  comentar(d, f) {
+    if (!d.get('texto').trim()) return marcarError(f, 'texto', 'Escribe un comentario.');
+    const p = db.publicaciones.find((x) => x.id === +f.dataset.id);
+    p.comentarios.push({ autor: actual, texto: d.get('texto').trim() }); notificar(p.autor, `${yo().nombre} comentó «${p.titulo}».`);
+    modal.hide(); render();
+  },
+  mensaje(d) {
+    const texto = d.get('texto').trim(); if (!texto) return;
+    db.chats.find((c) => c.id === chatId).mensajes.push({ autor: actual, texto, fecha: Date.now() });
+    render(); const m = $('#mensajes'); m.scrollTop = m.scrollHeight; $('#f-msj').focus();
+  },
+  'nuevo-chat'(d, f) {
+    const ids = d.getAll('invitados').map(Number);
+    if (!ids.length) { const e = f.querySelector('#e-invitados'); e.textContent = 'Elige al menos una persona.'; e.hidden = false; return; }
+    const tipo = ids.length === 1 ? 'individual' : 'grupal';
+    const chat = { id: db.siguiente++, tipo, nombre: d.get('nombre').trim() || (tipo === 'individual' ? usuario(ids[0]).nombre : 'Chat grupal'), participantes: [actual], mensajes: [] };
+    db.chats.push(chat);
+    ids.forEach((id) => { db.invitaciones.push({ id: db.siguiente++, chat: chat.id, de: actual, para: id, estado: 'pendiente' }); notificar(id, `${yo().nombre} te invitó a un chat.`); });
+    chatId = chat.id; modal.hide(); avisar(`Invitación enviada a ${ids.length} ${ids.length === 1 ? 'persona' : 'personas'}.`); pagina = 'mensajes'; render();
+  },
+  async perfil(d) {
+    const u = yo();
+    u.bio = d.get('bio').trim(); u.publico = d.get('publico') === 'on';
+    u.foto = (await leerImagen(d.get('foto').size ? d.get('foto') : null)) || u.foto;
+    u.encabezado = (await leerImagen(d.get('encabezado').size ? d.get('encabezado') : null)) || u.encabezado;
+    modal.hide(); avisar('Perfil actualizado.'); render();
+  },
+  'solicitar-curso'(d, f) {
+    if (!d.get('nombre').trim()) return marcarError(f, 'nombre', 'Indica el curso.');
+    db.cursos.push({ id: db.siguiente++, nombre: d.get('nombre').trim(), docente: 2, objetivo: d.get('texto').trim() || 'Sin objetivo indicado.', estado: 'solicitado', inscritos: [], interesados: [actual] });
+    modal.hide(); avisar('Solicitud enviada al docente.'); render();
+  },
+  umbral(d) { db.umbral = Math.max(1, Number(d.get('umbral')) || 3); avisar('Parámetro actualizado.'); }
+};
+
+/* ===== Eventos ===== */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-action]');
+  if (!b || !ACCIONES[b.dataset.action]) return;
+  e.preventDefault();
+  ACCIONES[b.dataset.action](b);
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target, manejar = FORMULARIOS[f.dataset.form];
+  if (!manejar) return;
+  e.preventDefault();
+  f.querySelectorAll('.is-invalid').forEach((x) => { x.classList.remove('is-invalid'); x.removeAttribute('aria-invalid'); });
+  f.querySelectorAll('.rs-error').forEach((x) => { x.hidden = true; });
+  manejar(new FormData(f), f);
+});
+document.addEventListener('input', (e) => {
+  if (e.target.matches('[data-filtro]')) {
+    if (e.target.id === 'f-q') consulta = e.target.value;
+    $('#resultados').innerHTML = resultadosExplorar();
+  }
+});
+$('#buscar').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { consulta = e.target.value; ir('explorar'); }
+});
+
+render();
+</script>
+</body>
+</html>

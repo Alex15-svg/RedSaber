@@ -34,4 +34,17 @@ async function cambiarVisibilidadCorreo(usuarioId, publico) {
     return resultado.rowCount === 1;
 }
 
-module.exports = { COLUMNAS, cambiarImagen, cambiarVisibilidadCorreo };
+// Datos del perfil propio: cuenta, etiquetas de carrera y ocupación, e imágenes. Null si no existe.
+async function obtener(usuarioId) {
+    const resultado = await pool.query(
+        `SELECT u.id, u.nombre, u.correo_institucional, u.correo_publico, u.carrera, u.ocupacion,
+                p.foto_url, p.encabezado_url, p.fondo_url
+           FROM usuarios u
+           LEFT JOIN perfiles p ON p.usuario_id = u.id
+          WHERE u.id = $1`,
+        [usuarioId]
+    );
+    return resultado.rows[0] || null;
+}
+
+module.exports = { COLUMNAS, cambiarImagen, cambiarVisibilidadCorreo, obtener };

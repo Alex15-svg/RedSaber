@@ -8,6 +8,9 @@ const router = express.Router();
 
 router.use(auth); // todas las rutas de este archivo exigen sesión iniciada
 
+// Ver mi perfil.
+router.get('/', controlador.verMiPerfil);
+
 // Cambiar foto, encabezado o fondo. :campo = foto | encabezado | fondo
 // Orden: 1) validar el campo, 2) multer guarda la imagen, 3) se actualiza la base.
 router.put('/imagen/:campo', controlador.revisarCampo, subida.single('imagen'), controlador.cambiarImagen);

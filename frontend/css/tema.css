@@ -1,0 +1,75 @@
+/* RedSaber · Paleta, tokens y tema claro/oscuro. Bootstrap toma estos valores en sus componentes. */
+
+/* 1. Paleta y temas ------------------------------------------------------- */
+:root {
+  --rs-red: #781F2D;
+  --rs-red-dark: #4B111C;
+  --rs-red-light: #A13B48;
+  --rs-black: #171719;
+  --rs-charcoal: #29292C;
+  --rs-lead: #45454A;
+  --rs-paper: #F0EDE5;
+  --rs-paper-light: #F8F6F0;
+  --rs-white: #FFFFFF;
+
+  /* Tokens de uso: los componentes solo usan estos */
+  --rs-bg: var(--rs-paper);
+  --rs-surface: var(--rs-paper-light);
+  --rs-surface-2: #E6E2D8;
+  --rs-ink: #202023;
+  --rs-muted: #66615B;
+  --rs-rule: #C9C4BA;
+  --rs-rule-strong: var(--rs-black);
+  --rs-accent: var(--rs-red);
+  --rs-accent-hover: var(--rs-red-dark);
+  --rs-accent-soft: #EBDDDA;
+  --rs-on-accent: var(--rs-white);
+  --rs-mast-bg: var(--rs-black);
+  --rs-mast-ink: var(--rs-paper);
+  --rs-mast-muted: #A9A49B;
+  --rs-success: #2F5D3A;
+  --rs-focus: var(--rs-red);
+
+  --rs-font-display: "Archivo", "Archivo Narrow", system-ui, sans-serif;
+  --rs-font-condensed: "Archivo Narrow", "Archivo", system-ui, sans-serif;
+  --rs-font-text: "IBM Plex Sans", "Inter", system-ui, sans-serif;
+  --rs-font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+
+  --rs-radius: 2px;
+  --rs-transition: 140ms ease-out;
+
+  /* Bootstrap toma estos valores en sus propios componentes */
+  --bs-body-bg: var(--rs-bg);
+  --bs-body-color: var(--rs-ink);
+  --bs-body-font-family: var(--rs-font-text);
+  --bs-border-color: var(--rs-rule);
+  --bs-emphasis-color: var(--rs-ink);
+  --bs-secondary-color: var(--rs-muted);
+  --bs-link-color: var(--rs-accent);
+  --bs-link-hover-color: var(--rs-accent-hover);
+  --bs-border-radius: var(--rs-radius);
+}
+
+[data-bs-theme="dark"] {
+  --rs-bg: var(--rs-black);
+  --rs-surface: var(--rs-charcoal);
+  --rs-surface-2: #333337;
+  --rs-ink: #EDE9E0;
+  --rs-muted: #ABA69D;
+  --rs-rule: #404045;
+  --rs-rule-strong: var(--rs-paper);
+  --rs-accent: #E07A86;            /* rojo aclarado: legible sobre negro */
+  --rs-accent-hover: #F0A0A9;
+  --rs-accent-soft: #3A2228;
+  --rs-on-accent: var(--rs-white);
+  --rs-mast-bg: #0E0E10;
+  --rs-success: #8CC59A;
+  --rs-focus: #E07A86;
+  --bs-body-bg: var(--rs-bg);
+  --bs-body-color: var(--rs-ink);
+  --bs-border-color: var(--rs-rule);
+  --bs-emphasis-color: var(--rs-ink);
+  --bs-secondary-color: var(--rs-muted);
+  --bs-link-color: var(--rs-accent);
+  --bs-link-hover-color: var(--rs-accent-hover);
+}
