@@ -86,4 +86,13 @@ async function restablecer(req, res) {
   }
 }
 
-module.exports = { registrar, iniciarSesionCorreo, recuperar, restablecer };
+async function listarUsuarios(req, res) {
+  try {
+    res.json(await modelo.listarUsuarios());
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Error interno' });
+  }
+}
+
+module.exports = { registrar, iniciarSesionCorreo, recuperar, restablecer, listarUsuarios };

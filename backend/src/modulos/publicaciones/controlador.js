@@ -1,23 +1,10 @@
 // Lógica de publicaciones: publicar dudas o soluciones (RF-06)
 // y editar o borrar solo las propias (RF-07).
 const modelo = require('./modelo');
-const { leerId, revisarTextos } = require('../../utils/validar');
+const { leerId, leerPublicacion } = require('../../utils/validar');
 
-// Largo máximo de cada campo (coincide con las columnas de tablas.sql).
-const LIMITES = { titulo: 200, carrera: 120, asignatura: 120, seccion: 30, descripcion: 5000 };
+// Tipos que publica un estudiante. Las guías las publica el docente (RF-11, módulo guias).
 const TIPOS = ['pregunta', 'solucion'];
-
-// Valida los textos y los devuelve sin espacios sobrantes al inicio y al final.
-function leerDatos(cuerpo) {
-    const errores = revisarTextos(cuerpo, LIMITES);
-    const datos = {};
-    for (const campo of Object.keys(LIMITES)) {
-        if (typeof cuerpo[campo] === 'string') {
-            datos[campo] = cuerpo[campo].trim();
-        }
-    }
-    return { errores, datos };
-}
 
 // Busca la publicación de la URL y comprueba que sea del usuario.
 // Si algo falla, responde el error y devuelve null.
@@ -39,7 +26,7 @@ async function buscarPropia(req, res) {
 // RF-06: un estudiante publica una pregunta o la solución de un ejercicio.
 async function crear(req, res) {
     const cuerpo = req.body || {};
-    const { errores, datos } = leerDatos(cuerpo);
+    const { errores, datos } = leerPublicacion(cuerpo);
 
     if (!TIPOS.includes(cuerpo.tipo)) {
         errores.push('El campo "tipo" debe ser "pregunta" o "solucion".');
@@ -67,7 +54,7 @@ async function editar(req, res) {
         return res.status(409).json({ error: 'La publicación está deshabilitada por moderación y no se puede editar.' });
     }
 
-    const { errores, datos } = leerDatos(req.body || {});
+    const { errores, datos } = leerPublicacion(req.body || {});
     if (errores.length) {
         return res.status(400).json({ error: errores.join(' ') });
     }

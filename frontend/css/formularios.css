@@ -1,0 +1,74 @@
+/* RedSaber · Formularios, etiquetas, avatares y paneles. */
+
+/* 8. Formularios ------------------------------------------------------------ */
+.rs-form { display: grid; gap: 0.9rem; }
+.rs-field { display: grid; gap: 0.3rem; }
+.rs-label { color: var(--rs-ink); }
+.rs-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--rs-lead);
+  border-radius: var(--rs-radius);
+  background: var(--rs-surface);
+  color: var(--rs-ink);
+  font-family: var(--rs-font-text);
+  transition: border-color var(--rs-transition), box-shadow var(--rs-transition);
+}
+[data-bs-theme="dark"] .rs-input { border-color: #5A5A60; background: #1F1F22; }
+.rs-input::placeholder { color: var(--rs-muted); opacity: 1; }
+.rs-input:focus { outline: none; border-color: var(--rs-accent); box-shadow: 3px 3px 0 var(--rs-accent); }
+.rs-input.is-invalid { border-color: var(--rs-red); border-width: 2px; }
+.rs-error { font-family: var(--rs-font-mono); font-size: 0.78rem; color: var(--rs-accent); }
+.rs-error::before { content: "✕ "; }
+.rs-hint { font-size: 0.85rem; color: var(--rs-muted); }
+.rs-check { display: flex; gap: 0.6rem; align-items: center; }
+.rs-check input { width: 20px; height: 20px; accent-color: var(--rs-red); }
+.rs-search { position: relative; }
+.rs-search .rs-input { padding-left: 2.4rem; }
+.rs-search svg { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; stroke: var(--rs-muted); fill: none; stroke-width: 2; }
+
+/* 9. Etiquetas, avatares y paneles ---------------------------------------- */
+.rs-tag {
+  display: inline-block;
+  padding: 0.12rem 0.45rem;
+  border: 1px solid var(--rs-rule-strong);
+  font-family: var(--rs-font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--rs-ink);
+  line-height: 1.5;
+}
+.rs-tag--accent { background: var(--rs-red); border-color: var(--rs-red); color: var(--rs-white); }
+.rs-tag--soft { border-color: var(--rs-rule); color: var(--rs-muted); }
+.rs-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+.rs-verified { color: var(--rs-accent); font-family: var(--rs-font-mono); font-size: 0.72rem; text-transform: uppercase; }
+
+.rs-avatar {
+  width: 52px; height: 52px; flex: none;
+  display: grid; place-items: center;
+  background: var(--rs-lead); color: var(--rs-paper);
+  font-family: var(--rs-font-display); font-weight: 900; font-size: 1.05rem; letter-spacing: -0.03em;
+  overflow: hidden;
+}
+.rs-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.rs-avatar--docente { background: var(--rs-red); }
+.rs-avatar--administrador { background: var(--rs-black); outline: 1px solid var(--rs-rule); }
+.rs-avatar--sm { width: 40px; height: 40px; font-size: 0.85rem; }
+.rs-avatar--lg { width: 112px; height: 112px; font-size: 2.2rem; border: 4px solid var(--rs-bg); }
+
+.rs-panel { border: 1px solid var(--rs-rule); background: var(--rs-surface); padding: 1.25rem; margin-bottom: 1rem; }
+.rs-panel--rule { border: 0; border-top: 4px solid var(--rs-rule-strong); background: transparent; padding: 0.9rem 0 1.25rem; }
+.rs-panel--ink { background: var(--rs-black); color: var(--rs-paper); border-color: var(--rs-black); }
+[data-bs-theme="dark"] .rs-panel--ink { background: var(--rs-red-dark); border-color: var(--rs-red-dark); }
+.rs-panel--ink .rs-muted, .rs-panel--ink .rs-meta { color: var(--rs-mast-muted); }
+[data-bs-theme="dark"] .rs-panel--ink .rs-meta { color: #E2C3C7; }
+.rs-stat { font-family: var(--rs-font-display); font-weight: 900; font-size: 3rem; line-height: 0.9; color: var(--rs-accent); }
+.rs-panel--ink .rs-stat { color: #E07A86; }
+.rs-notice { border: 1px dashed var(--rs-rule-strong); padding: 0.75rem 1rem; font-size: 0.92rem; margin-bottom: 1rem; }
+.rs-notice strong { font-family: var(--rs-font-condensed); text-transform: uppercase; letter-spacing: 0.05em; color: var(--rs-accent); }
+.rs-empty { text-align: center; padding: 3.5rem 1.5rem; color: var(--rs-muted); }
+.rs-empty .rs-h2 { color: var(--rs-ink); margin-bottom: 0.5rem; }
+.rs-list-row { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 0; border-bottom: 1px solid var(--rs-rule); }
+.rs-list-row > div { flex: 1; min-width: 0; }

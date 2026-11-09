@@ -40,10 +40,22 @@ app.use('/api/guardados', require('./modulos/guardados/rutas'));
 app.use('/api/talleres', require('./modulos/talleres/rutas'));
 app.use('/api/chats', require('./modulos/mensajeria/rutas'));
 app.use('/api/cuentas', require('./modulos/cuentas/rutas'));
+app.use('/api/moderacion', require('./modulos/moderacion/rutas')); // RF-13: revisión de apelaciones
 
+// Rutas de la API: RF-09 a RF-12.
+app.use('/api/buscar', require('./modulos/busqueda/rutas'));
+app.use('/api/documentos', require('./modulos/documentos/rutas'));
+app.use('/api/guias', require('./modulos/guias/rutas'));
+app.use('/api/moderacion', require('./modulos/reportes/rutas')); // RF-12: reportes y apelaciones
+
+// RF-12: elimina cada hora lo deshabilitado que no se apeló dentro del plazo.
+require('./modulos/reportes/limpieza').programar();
 
 // Imágenes de perfil subidas por los usuarios (RF-05).
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// Interfaz web (frontend): se abre en http://localhost:3000/app
+app.use('/app', express.static(path.join(__dirname, '..', '..', 'frontend')));
 
 
 // Manejador de errores: siempre debe ir al final, después de todas las rutas.

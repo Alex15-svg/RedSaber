@@ -1,0 +1,119 @@
+/* RedSaber · Retícula de tres columnas y cabecera lateral (masthead). */
+
+/* 4. Retícula --------------------------------------------------------------- */
+.rs-layout {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr) 300px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+.rs-main {
+  min-width: 0;
+  border-right: 1px solid var(--rs-rule);
+  background: var(--rs-bg);
+}
+.rs-section { padding: 1.5rem 2rem; }
+.rs-aside { padding: 1.5rem 1.5rem 3rem; }
+.rs-aside-block { border-top: 4px solid var(--rs-rule-strong); padding-top: 0.75rem; margin-bottom: 2rem; }
+.rs-aside-list { list-style: none; padding: 0; margin: 0; counter-reset: rs-list; }
+.rs-aside-list li { counter-increment: rs-list; border-bottom: 1px solid var(--rs-rule); }
+.rs-aside-list button {
+  all: unset;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  width: 100%;
+  padding: 0.65rem 0;
+  cursor: pointer;
+}
+.rs-aside-list button::before {
+  content: counter(rs-list, decimal-leading-zero);
+  font-family: var(--rs-font-mono);
+  font-size: 0.78rem;
+  color: var(--rs-accent);
+  padding-top: 0.15rem;
+}
+.rs-aside-list strong { font-family: var(--rs-font-condensed); font-weight: 700; font-size: 1.02rem; }
+.rs-aside-list small { display: block; grid-column: 2; color: var(--rs-muted); font-size: 0.82rem; }
+.rs-aside-list button:hover strong { color: var(--rs-accent); text-decoration: underline; text-underline-offset: 3px; }
+
+/* 5. Cabecera lateral (masthead) ------------------------------------------ */
+.rs-masthead {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem 1.25rem;
+  background: var(--rs-mast-bg);
+  color: var(--rs-mast-ink);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.rs-body .rs-brand { display: flex; align-items: center; gap: 0.7rem; color: var(--rs-mast-ink); text-decoration: none; }
+.rs-brand-symbol { width: 44px; height: 44px; flex: none; display: block; }
+.rs-brand-name { font-family: var(--rs-font-display); font-weight: 900; font-size: 1.65rem; letter-spacing: -0.04em; line-height: 1; }
+.rs-brand-name span { color: #E07A86; }
+.rs-brand-tagline {
+  font-family: var(--rs-font-mono);
+  font-size: 0.7rem;
+  color: var(--rs-mast-muted);
+  border-top: 1px solid #3A3A3F;
+  border-bottom: 1px solid #3A3A3F;
+  padding: 0.35rem 0;
+  letter-spacing: 0.04em;
+}
+.rs-navbar { display: grid; gap: 0.1rem; }
+.rs-nav-link {
+  display: grid;
+  grid-template-columns: 1.6rem 1.4rem 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: 0;
+  border-left: 4px solid transparent;
+  background: transparent;
+  color: var(--rs-mast-ink);
+  font-family: var(--rs-font-condensed);
+  font-weight: 600;
+  font-size: 1.02rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  transition: background var(--rs-transition), border-color var(--rs-transition);
+}
+.rs-nav-link .rs-nav-index { font-family: var(--rs-font-mono); font-size: 0.72rem; color: var(--rs-mast-muted); }
+.rs-nav-link svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.rs-nav-link:hover { background: #26262A; }
+.rs-nav-link[aria-current="page"] { border-left-color: #E07A86; background: var(--rs-red-dark); color: var(--rs-white); }
+.rs-nav-link[aria-current="page"] .rs-nav-index { color: #F2C9CE; }
+.rs-account {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0 0;
+  border-top: 1px solid #3A3A3F;
+  color: var(--rs-mast-ink);
+  background: transparent;
+  border-left: 0; border-right: 0; border-bottom: 0;
+  text-align: left;
+  width: 100%;
+}
+.rs-account small { display: block; font-family: var(--rs-font-mono); font-size: 0.72rem; color: var(--rs-mast-muted); }
+.rs-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #4A4A50;
+  background: transparent;
+  color: var(--rs-mast-ink);
+  font-family: var(--rs-font-mono);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--rs-radius);
+}
+.rs-theme-toggle:hover { border-color: var(--rs-mast-ink); }

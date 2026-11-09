@@ -1,0 +1,71 @@
+/* RedSaber · Base tipográfica y materialidad (papel, borde rasgado, desregistro). */
+
+/* 2. Base y tipografía ---------------------------------------------------- */
+.rs-body {
+  background: var(--rs-bg);
+  color: var(--rs-ink);
+  font-family: var(--rs-font-text);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.rs-body ::selection { background: var(--rs-red); color: var(--rs-white); }
+
+.rs-heading,
+.rs-display {
+  font-family: var(--rs-font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--rs-ink);
+}
+.rs-display { font-size: clamp(2.4rem, 5vw, 4.25rem); font-weight: 900; line-height: 0.92; }
+.rs-h2 { font-family: var(--rs-font-display); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.015em; line-height: 1.05; }
+.rs-h3 { font-family: var(--rs-font-condensed); font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.02em; }
+.rs-kicker,
+.rs-label {
+  font-family: var(--rs-font-condensed);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.rs-kicker { color: var(--rs-accent); }
+.rs-meta,
+.rs-caption {
+  font-family: var(--rs-font-mono);
+  font-size: 0.78rem;
+  color: var(--rs-muted);
+  letter-spacing: 0.01em;
+}
+.rs-muted { color: var(--rs-muted); }
+.rs-body a { color: var(--rs-accent); text-underline-offset: 3px; }
+
+/* 3. Materialidad: papel, ruido e impresión ------------------------------ */
+/* Ruido de papel. Solo se usa en bloques de identidad, nunca en el texto largo. */
+.rs-paper-texture { position: relative; isolation: isolate; }
+.rs-paper-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+[data-bs-theme="dark"] .rs-paper-texture::before,
+.rs-masthead.rs-paper-texture::before { mix-blend-mode: screen; opacity: 0.07; }
+
+/* Borde inferior rasgado, como papel cortado a mano */
+.rs-torn {
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 96% 92%, 91% 88%, 85% 94%, 78% 89%, 71% 95%, 63% 90%,
+    55% 96%, 47% 90%, 40% 94%, 32% 89%, 25% 95%, 17% 90%, 10% 95%, 4% 90%, 0 94%);
+}
+
+/* Desregistro de tinta: una segunda capa roja levemente corrida. Solo en titulares. */
+.rs-misprint { text-shadow: 2px 1px 0 color-mix(in srgb, var(--rs-red) 32%, transparent); }
+[data-bs-theme="dark"] .rs-misprint { text-shadow: 2px 1px 0 color-mix(in srgb, var(--rs-red-light) 55%, transparent); }
+
+.rs-divider { border: 0; border-top: 1px solid var(--rs-rule); margin: 1.5rem 0; opacity: 1; }
+.rs-divider--heavy { border-top: 4px solid var(--rs-rule-strong); }

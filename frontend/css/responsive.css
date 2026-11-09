@@ -1,0 +1,55 @@
+/* RedSaber · Adaptación a tablet y celular. */
+
+/* 13. Responsive ------------------------------------------------------------ */
+/* Tablet: la columna derecha desaparece y la cabecera se vuelve un riel de íconos */
+@media (max-width: 1199.98px) {
+  .rs-layout { grid-template-columns: 220px minmax(0, 1fr); }
+  .rs-aside { display: none; }
+  .rs-main { border-right: 0; }
+}
+@media (max-width: 991.98px) {
+  .rs-layout { grid-template-columns: 76px minmax(0, 1fr); }
+  .rs-masthead { padding: 1.25rem 0.6rem; align-items: center; }
+  .rs-brand-name, .rs-brand-tagline, .rs-nav-text, .rs-nav-index, .rs-account-text, .rs-publish-text, .rs-theme-text { display: none; }
+  .rs-nav-link { grid-template-columns: 1fr; justify-items: center; padding: 0.7rem 0; border-left-width: 0; border-bottom: 3px solid transparent; }
+  .rs-nav-link[aria-current="page"] { border-bottom-color: #E07A86; }
+  .rs-account { justify-content: center; }
+  .rs-button--publish { padding: 0.5rem; }
+}
+/* Móvil: cabecera arriba, navegación fija abajo, una sola columna */
+@media (max-width: 767.98px) {
+  .rs-layout { display: block; }
+  .rs-masthead {
+    position: sticky; z-index: 20; height: auto;
+    flex-direction: row; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem; gap: 0.5rem;
+  }
+  .rs-brand-symbol { width: 36px; height: 36px; }
+  .rs-brand-name { display: block; font-size: 1.35rem; }
+  .rs-account, .rs-masthead .rs-button--publish { display: none; }
+  .rs-menu-toggle { display: inline-flex; margin-left: auto; }
+  .rs-navbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    display: flex; background: var(--rs-mast-bg); border-top: 3px solid var(--rs-red);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .rs-nav-link { flex: 1; min-height: 56px; }
+  .rs-nav-link[data-movil="no"] { display: none; }
+  .rs-pagehead { top: 56px; padding: 1rem 1rem 0; }
+  .rs-section, .rs-tabs { padding-left: 1rem; padding-right: 1rem; }
+  .rs-compose { margin: 1rem; }
+  .rs-entry { grid-template-columns: 40px minmax(0, 1fr); gap: 0.75rem; padding: 1.1rem 1rem; }
+  .rs-entry .rs-avatar { width: 40px; height: 40px; font-size: 0.85rem; }
+  .rs-entry-title { font-size: 1.2rem; }
+  .rs-cover { height: 140px; padding: 1rem; }
+  .rs-cover-word { font-size: 3.5rem; }
+  .rs-profile-head { padding: 0 1rem; margin-top: -44px; }
+  .rs-avatar--lg { width: 88px; height: 88px; }
+  .rs-chat { grid-template-columns: 1fr; }
+  .rs-chat-list { border-right: 0; border-bottom: 2px solid var(--rs-rule-strong); display: flex; overflow-x: auto; }
+  .rs-chat-item { border-bottom: 0; border-right: 1px solid var(--rs-rule); white-space: nowrap; width: auto; }
+  .rs-main { padding-bottom: 72px; }
+  .rs-fab { display: inline-flex; position: fixed; right: 1rem; bottom: 76px; z-index: 25; width: 56px; height: 56px; padding: 0; box-shadow: 4px 4px 0 var(--rs-black); }
+  .rs-paper-texture::before { opacity: 0.08; }   /* textura más suave en pantallas chicas */
+  .rs-table th:nth-child(3), .rs-table td:nth-child(3) { display: none; }
+}
