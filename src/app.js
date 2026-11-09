@@ -13,12 +13,12 @@ const pool = require('./config/dbPostgre'); // Importa la configuración de la b
 // Middleware(s) para parsear el cuerpo de las solicitudes.
 app.use(express.json());
 
-// 
+
 pool.query('SELECT NOW()')
   .then(r => console.log('Conectado:', r.rows[0]))
   .catch(e => console.error('Error:', e.message));
 
-app.listen(3000, () => console.log('Servidor en http://localhost:3000'));
+
 
 
 app.get('/', (req, res) => {
@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`**Servidor corriendo en el puerto: ${PORT}**`);
+    console.log(`**Servidor corriendo en el puerto: https://localhost:${PORT}**`);
 });
 
 app.use(express.urlencoded({ extended: true }));
@@ -38,39 +38,12 @@ app.use('/api/publicaciones', require('./modulos/publicaciones/rutas'));
 app.use('/api/guardados', require('./modulos/guardados/rutas'));
 app.use('/api/talleres', require('./modulos/talleres/rutas'));
 app.use('/api/chats', require('./modulos/mensajeria/rutas'));
+app.use('/api/cuentas', require('./modulos/cuentas/rutas'));
+
 
 // Imágenes de perfil subidas por los usuarios (RF-05).
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-
-
-// Ruta para mostrar el formulario html.
-app.get(/formulario/, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'formulario.html'));
-});
-
-
-
-// Procesar formulario.
-app.post('/procesar-formulario', (req, res) => {
-    const { correo,passwd } = req.body;
-
-// Validaciones de formulario
-    // Define el formato a validar de correo institucional.
-    const correoValido = validator.isEmail(correo) && correo.endsWith('@inacapmail.cl');
-
-    // Validar campos y correo institucional (mínimo 6 caracteres).
-    const errors = [];
-    if (!passwd || passwd.length < 6) {
-        errors.push('La contraseña debe tener al menos 6 caracteres.');
-    }
-    if (!correo || !passwd) {
-        errors.push('Todos los campos son obligatorios.');
-    }
-    if (!correoValido) {
-        errors.push('El correo debe ser un correo institucional válido.');
-    }
-});
 
 // Manejador de errores: siempre debe ir al final, después de todas las rutas.
 app.use(require('./middlewares/errores'));

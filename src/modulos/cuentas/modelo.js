@@ -1,5 +1,5 @@
-const pool = require('../../config/db');
-
+const pool = require('../../config/dbPostgre');
+const enTransaccion = require('../../utils/transaccion');
 // Busca un usuario por correo, sin distinguir mayúsculas (login y duplicados)
 async function buscarPorCorreo(correo) {
   const r = await pool.query(
@@ -57,4 +57,14 @@ async function buscarPorId(id) {
   return r.rows[0];
 }
 
-module.exports = { buscarPorCorreo, crearUsuario, buscarPorId };
+// RF-02: solo el administrador puede ver la lista de usuarios
+async function listarUsuarios(req, res) {
+  try {
+    res.json(await modelo.listarUsuarios());
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Error interno' });
+  }
+}
+
+module.exports = {  registrar, iniciarSesionCorreo, recuperar, restablecer, listarUsuarios };
