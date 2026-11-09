@@ -1,4 +1,5 @@
-require('dotenv').config({ quiet: true }); // Lee el archivo .env (debe ir antes que todo lo demás).
+// Lee backend/.env (debe ir antes que todo lo demás). La ruta es fija para que funcione desde cualquier carpeta.
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env'), quiet: true });
 const express = require('express'); // Módulo de Express para crear la aplicación web.
 const app = express(); // Crea una instancia de la aplicación Express.
 const PORT=3000; // Define el puerto en el que se ejecutará el servidor.
