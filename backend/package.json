@@ -17,8 +17,9 @@
   "license": "ISC",
   "author": "Fabian Nuñez - Samuel Carrasco",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
+    "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
