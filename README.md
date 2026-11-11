@@ -8,18 +8,21 @@ backend/            Servidor (Node.js + Express + PostgreSQL)
   src/              Código: app.js, config, middlewares, modulos y utils
   tablas.sql        Tablas de la base de datos
   .env.example      Plantilla de configuración (copiar como .env)
-  package.json      Dependencias del servidor
-frontend/           Interfaz web
-  views/            Páginas HTML
-  css/              Estilos
-  js/               Scripts del navegador
+frontend/           Interfaz web en React (Vite)
+  src/              Componentes, vistas y estilos (css/)
+  public/img/       Glifo e íconos
+  index.html        Página de entrada
 docs/               Documentación del código
 ```
 
-## Cómo iniciar el servidor
+## Cómo iniciar
 
-1. Entrar a la carpeta del servidor: `cd backend`
-2. Instalar dependencias: `npm install`
-3. Copiar `.env.example` como `.env` (dentro de `backend/`) y completar los datos de PostgreSQL y `JWT_SECRET`.
-4. Crear la base en pgAdmin y ejecutar `tablas.sql` en ella.
-5. Iniciar: `npm start` (o `node src/app.js`). Queda en http://localhost:3000
+1. Base de datos: crear la base en pgAdmin y ejecutar `backend/tablas.sql` en ella.
+2. Configuración: copiar `backend/.env.example` como `backend/.env` y completar PostgreSQL y `JWT_SECRET`.
+   `CORREOS_DOCENTES` y `CORREOS_ADMIN` (separados por coma) definen quién se registra como docente o administración.
+3. Interfaz: `cd frontend`, luego `npm install` y `npm run build` (genera `frontend/dist`).
+4. Servidor: `cd backend`, luego `npm install` y `npm start`.
+5. Abrir http://localhost:3000/app
+
+Para trabajar en la interfaz con recarga automática: con el servidor encendido, ejecutar `npm run dev` en `frontend`
+y abrir http://localhost:5173/app (las llamadas a la API se reenvían al puerto 3000).

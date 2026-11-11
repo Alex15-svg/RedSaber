@@ -6,7 +6,8 @@ const { PLAZO_APELACION_DIAS } = require('../../config/moderacion');
 
 const UNA_HORA = 60 * 60 * 1000;
 
-// ids deshabilitados hace más del plazo y sin apelación desde que se deshabilitaron.
+// ids deshabilitados hace más del plazo y sin una apelación vigente desde que se deshabilitaron.
+// Una apelación rechazada (RF-13) ya no protege: se elimina igual que lo no apelado.
 async function buscarVencidos(tipo) {
     const { tabla, apelacion } = OBJETIVOS[tipo];
     const resultado = await pool.query(
@@ -14,7 +15,8 @@ async function buscarVencidos(tipo) {
           WHERE t.estado = 'deshabilitada'
             AND now() > t.deshabilitado_en + make_interval(days => $1)
             AND NOT EXISTS (SELECT 1 FROM apelaciones a
-                             WHERE a.${apelacion} = t.id AND a.creado_en >= t.deshabilitado_en)`,
+                             WHERE a.${apelacion} = t.id AND a.creado_en >= t.deshabilitado_en
+                               AND a.estado <> 'rechazada')`,
         [PLAZO_APELACION_DIAS]
     );
     return resultado.rows.map((fila) => fila.id);
