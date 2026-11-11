@@ -9,13 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Archivo+Narrow:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="css/tema.css" rel="stylesheet">
-<link href="css/base.css" rel="stylesheet">
-<link href="css/estructura.css" rel="stylesheet">
-<link href="css/componentes.css" rel="stylesheet">
-<link href="css/formularios.css" rel="stylesheet">
-<link href="css/vistas.css" rel="stylesheet">
-<link href="css/responsive.css" rel="stylesheet">
 <script>
   // Aplica el tema guardado antes de pintar, para evitar un parpadeo.
   try {
@@ -26,85 +19,7 @@
 </script>
 </head>
 <body class="rs-body">
-<a class="rs-skip" href="#contenido">Saltar al contenido</a>
-
-<div class="rs-layout">
-  <!-- Cabecera lateral: marca, navegación y cuenta -->
-  <aside class="rs-masthead rs-paper-texture" aria-label="Navegación principal">
-    <a class="rs-brand" href="#/portada">
-      <svg class="rs-brand-symbol" role="img" aria-label="Glifo de RedSaber"><use href="img/iconos.svg#rs-glifo"/></svg>
-      <span class="rs-brand-name">Red<span>Saber</span></span>
-    </a>
-    <div class="rs-brand-tagline">COMUNIDAD ACADÉMICA · SEDE · Nº 01</div>
-    <nav class="rs-navbar" id="nav"></nav>
-    <button class="rs-button rs-button--publish" type="button" data-action="publicar-foco">
-      <span aria-hidden="true">✎</span><span class="rs-publish-text">Publicar</span>
-    </button>
-    <button class="rs-theme-toggle rs-menu-toggle" type="button" data-action="menu" aria-label="Abrir menú de secciones">☰ Menú</button>
-    <button class="rs-theme-toggle" type="button" data-action="tema" aria-label="Cambiar tema claro u oscuro">
-      <span aria-hidden="true">◐</span><span class="rs-theme-text" id="temaTexto">Tema oscuro</span>
-    </button>
-    <button class="rs-account" type="button" data-action="cuenta" id="cuenta"></button>
-  </aside>
-
-  <!-- Contenido de la página actual -->
-  <main class="rs-main" id="contenido" tabindex="-1">
-    <header class="rs-pagehead">
-      <div class="rs-pagehead-row">
-        <div>
-          <div class="rs-kicker" id="pageKicker">Nº 01 · Portada</div>
-          <h1 class="rs-display rs-misprint" id="pageTitle">Portada</h1>
-        </div>
-        <div class="d-flex gap-2 align-items-center pb-3">
-          <span class="rs-meta d-none d-md-inline" id="fecha"></span>
-          <button class="rs-button rs-button--ghost rs-button--sm" type="button" data-action="sesion" id="btnSesion">Ingresar</button>
-        </div>
-      </div>
-      <div class="rs-pagehead-rules"></div>
-    </header>
-    <div id="vista" aria-live="polite"></div>
-  </main>
-
-  <!-- Columna derecha: búsqueda y accesos -->
-  <aside class="rs-aside" aria-label="Índice y accesos">
-    <form class="rs-search mb-4" data-form="buscar-lateral" role="search">
-      <svg aria-hidden="true"><use href="img/iconos.svg#i-buscar"/></svg>
-      <label class="visually-hidden" for="buscar">Buscar en RedSaber</label>
-      <input class="rs-input" id="buscar" name="q" type="search" placeholder="Buscar en RedSaber">
-    </form>
-    <section class="rs-aside-block">
-      <h2 class="rs-h3 mb-2">Carreras</h2>
-      <ol class="rs-aside-list" id="carreras"><li><small class="rs-muted">Ingresa para ver las carreras.</small></li></ol>
-    </section>
-    <section class="rs-aside-block">
-      <h2 class="rs-h3 mb-2">Accesos</h2>
-      <ol class="rs-aside-list">
-        <li><button type="button" data-action="ir" data-pagina="biblioteca"><strong>Biblioteca</strong><small>Documentación por área</small></button></li>
-        <li><button type="button" data-action="ir" data-pagina="guardados"><strong>Guardados</strong><small>Tu lista privada</small></button></li>
-        <li><button type="button" data-action="ir" data-pagina="talleres"><strong>Talleres de la sede</strong><small>Inscritos y capacidad</small></button></li>
-      </ol>
-    </section>
-    <p class="rs-caption">RedSaber · Ingeniería de Software TI3043 · INACAP.</p>
-  </aside>
-</div>
-
-<button class="rs-button rs-fab" type="button" data-action="publicar-foco" aria-label="Publicar">✎</button>
-
-<!-- Modal reutilizable (Bootstrap 5) y aviso flotante -->
-<div class="modal fade rs-modal" id="modal" tabindex="-1" aria-labelledby="modalTitulo" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="modalTitulo">RedSaber</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body" id="modalCuerpo"></div>
-    </div>
-  </div>
-</div>
-<div class="rs-toast" id="toast" role="status" aria-live="polite" hidden></div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script type="module" src="js/app.js"></script>
+<div id="raiz"></div>
+<script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

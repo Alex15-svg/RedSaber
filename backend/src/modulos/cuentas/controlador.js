@@ -2,8 +2,12 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const modelo = require('./modelo');
+const { enviarCorreo } = require('../../utils/correo');
 
-const CORREOS_DOCENTES = []; // RF-02 parcial: por ahora todos son estudiantes
+// RF-02: la ocupación la decide el servidor según estas listas del .env (separadas por coma).
+const lista = (v) => (v || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+const CORREOS_DOCENTES = lista(process.env.CORREOS_DOCENTES);
+const CORREOS_ADMIN = lista(process.env.CORREOS_ADMIN);
 const sha256 = (t) => crypto.createHash('sha256').update(t).digest('hex');
 
 // RF-01
@@ -19,7 +23,8 @@ async function registrar(req, res) {
     if (await modelo.buscarPorCorreo(correo))
       return res.status(409).json({ error: 'Ese correo ya está registrado' });
 
-    const ocupacion = CORREOS_DOCENTES.includes(correo.toLowerCase()) ? 'docente' : 'estudiante';
+    const c = correo.toLowerCase();
+    const ocupacion = CORREOS_ADMIN.includes(c) ? 'administrador' : CORREOS_DOCENTES.includes(c) ? 'docente' : 'estudiante';
     const contrasenaHash = await bcrypt.hash(contrasena, 10);
     const usuario = await modelo.crearUsuario({ nombre, correo, contrasenaHash, ocupacion, carrera });
     res.status(201).json({ mensaje: 'Cuenta creada', usuario });
@@ -62,7 +67,14 @@ async function recuperar(req, res) {
     if (usuario) {
       const token = crypto.randomBytes(32).toString('hex');
       await modelo.guardarToken(usuario.id, sha256(token));
-      console.log('TOKEN DE RECUPERACIÓN (simula el correo):', token);
+      try {
+        await enviarCorreo({
+          para: usuario.correo_institucional,
+          asunto: 'RedSaber - Restablecer contraseña',
+          texto: `Hola ${usuario.nombre},\n\nTu código de recuperación es:\n\n${token}\n\nAbre RedSaber, entra a "Recuperar" y pégalo para crear una contraseña nueva. Vence en 30 minutos y solo sirve una vez.\nSi no lo pediste tú, ignora este correo.`        });
+      } catch (e) {
+        console.error(`Error al enviar correo a ${usuario.correo_institucional}:`, e);
+      }
     }
     res.json({ mensaje: 'Si el correo existe, se envió un enlace de recuperación' });
   } catch (e) {

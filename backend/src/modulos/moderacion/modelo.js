@@ -51,4 +51,28 @@ async function rehabilitar(apelacionId, adminId) {
   });
 }
 
-module.exports = { listarPendientes, rehabilitar };
+// Rechaza la apelación: la cuenta o publicación sigue deshabilitada y la limpieza
+// de RF-12 la elimina al vencer el plazo. Devuelve la apelación, o null si no existe o ya estaba resuelta.
+async function rechazar(apelacionId, adminId) {
+  return enTransaccion(async (c) => {
+    const r = await c.query(
+      `UPDATE apelaciones
+       SET estado = 'rechazada', resuelta_en = now(),
+           administrador_id = (SELECT usuario_id FROM administradores WHERE usuario_id = $2)
+       WHERE id = $1 AND estado = 'pendiente'
+       RETURNING id, usuario_id, publicacion_id`,
+      [apelacionId, adminId]
+    );
+    const ap = r.rows[0];
+    if (!ap) return null;
+
+    await c.query(
+      `INSERT INTO registro_moderacion (tipo_objetivo, objetivo_id, accion, responsable)
+       VALUES ($1, $2, 'rechazar apelacion', (SELECT correo_institucional FROM usuarios WHERE id = $3))`,
+      [ap.usuario_id ? 'usuario' : 'publicacion', ap.usuario_id || ap.publicacion_id, adminId]
+    );
+    return ap;
+  });
+}
+
+module.exports = { listarPendientes, rehabilitar, rechazar };

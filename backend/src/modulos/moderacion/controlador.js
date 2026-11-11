@@ -26,4 +26,20 @@ async function rehabilitar(req, res) {
   }
 }
 
-module.exports = { listarApelaciones, rehabilitar };
+async function rechazar(req, res) {
+  try {
+    const id = leerId(req.params.id);
+    if (!id) return res.status(400).json({ error: 'Id no válido' });
+
+    const apelacion = await modelo.rechazar(id, req.usuario.id);
+    if (!apelacion)
+      return res.status(404).json({ error: 'Apelación no encontrada o ya resuelta' });
+
+    res.json({ mensaje: 'Apelación rechazada: se eliminará al vencer el plazo' });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Error interno' });
+  }
+}
+
+module.exports = { listarApelaciones, rehabilitar, rechazar };

@@ -40,6 +40,7 @@ app.use('/api/guardados', require('./modulos/guardados/rutas'));
 app.use('/api/talleres', require('./modulos/talleres/rutas'));
 app.use('/api/chats', require('./modulos/mensajeria/rutas'));
 app.use('/api/cuentas', require('./modulos/cuentas/rutas'));
+app.use('/api/cursos', require('./modulos/cursos/rutas'));
 app.use('/api/moderacion', require('./modulos/moderacion/rutas')); // RF-13: revisión de apelaciones
 
 // Rutas de la API: RF-09 a RF-12.
@@ -54,8 +55,9 @@ require('./modulos/reportes/limpieza').programar();
 // Imágenes de perfil subidas por los usuarios (RF-05).
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-// Interfaz web (frontend): se abre en http://localhost:3000/app
-app.use('/app', express.static(path.join(__dirname, '..', '..', 'frontend')));
+// Interfaz web en React: se abre en http://localhost:3000/app
+// Sirve la versión compilada (frontend/dist), que se genera con «npm run build» en la carpeta frontend.
+app.use('/app', express.static(path.join(__dirname, '..', '..', 'frontend', 'dist')));
 
 
 // Manejador de errores: siempre debe ir al final, después de todas las rutas.
