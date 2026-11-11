@@ -12,6 +12,7 @@
   <symbol id="i-mensajes" viewBox="0 0 24 24"><path d="M3 4h18v13H8l-5 4z"/></symbol>
   <symbol id="i-guardados" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
   <symbol id="i-biblioteca" viewBox="0 0 24 24"><path d="M6 2h8l5 5v15H6zM14 2v6h5M9 13h7M9 17h7"/></symbol>
+  <symbol id="i-cursos" viewBox="0 0 24 24"><path d="M2 8l10-5 10 5-10 5zM6 10v5c0 2 3 4 6 4s6-2 6-4v-5M22 8v6"/></symbol>
   <symbol id="i-talleres" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 2v4M16 2v4M4 9h16"/></symbol>
   <symbol id="i-perfil" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
   <symbol id="i-moderacion" viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3 8-8 11-5-3-8-6-8-11V5zM9 12l2 2 4-5"/></symbol>

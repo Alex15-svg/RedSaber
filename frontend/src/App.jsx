@@ -11,13 +11,14 @@ import Explorar from './vistas/Explorar.jsx';
 import Mensajes from './vistas/Mensajes.jsx';
 import Guardados from './vistas/Guardados.jsx';
 import Biblioteca from './vistas/Biblioteca.jsx';
+import Cursos from './vistas/Cursos.jsx';
 import Talleres from './vistas/Talleres.jsx';
 import Perfil from './vistas/Perfil.jsx';
 import Moderacion from './vistas/Moderacion.jsx';
 
 const VISTAS = {
     portada: ['Portada', Portada], explorar: ['Explorar', Explorar], mensajes: ['Mensajes', Mensajes],
-    guardados: ['Guardados', Guardados], biblioteca: ['Biblioteca', Biblioteca], talleres: ['Talleres', Talleres],
+    guardados: ['Guardados', Guardados], biblioteca: ['Biblioteca', Biblioteca], cursos: ['Cursos', Cursos], talleres: ['Talleres', Talleres],
     perfil: ['Perfil', Perfil], moderacion: ['Moderación', Moderacion]
 };
 

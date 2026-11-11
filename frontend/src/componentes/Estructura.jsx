@@ -6,7 +6,7 @@ import { useDatos } from '../ganchos.js';
 import { ROLES, ir } from '../utiles.js';
 import { Icono, Avatar } from './Piezas.jsx';
 
-const SOLO_ESCRITORIO = ['guardados', 'biblioteca', 'moderacion']; // en celular se abren desde «Menú»
+const SOLO_ESCRITORIO = ['guardados', 'biblioteca', 'cursos', 'moderacion']; // en celular se abren desde «Menú»
 
 export function Cabecera({ paginas, actual, alIngresar }) {
     const { usuario } = useSesion();

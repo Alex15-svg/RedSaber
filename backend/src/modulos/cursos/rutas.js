@@ -3,6 +3,9 @@ const c = require('./controlador');
 const auth = require('../../middlewares/auth');
 const roles = require('../../middlewares/roles');
 
+// Catálogo: cursos disponibles para la pantalla de cursos (catalogo.js)
+router.get('/', auth, require('./catalogo').disponibles);
+
 // RF-14 (estudiante pide, docente recibe)
 router.post('/solicitar', auth, roles('estudiante'), c.solicitar);
 router.get('/solicitudes', auth, roles('docente'), c.solicitudes);
