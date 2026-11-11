@@ -29,8 +29,9 @@ async function crearUsuario({ nombre, correo, contrasenaHash, ocupacion, carrera
       await client.query('INSERT INTO estudiantes (usuario_id) VALUES ($1)', [usuario.id]);
     } else if (ocupacion === 'docente') {
       await client.query('INSERT INTO docentes (usuario_id) VALUES ($1)', [usuario.id]);
+    } else if (ocupacion === 'administrador') {
+      await client.query('INSERT INTO administradores (usuario_id) VALUES ($1)', [usuario.id]);
     }
-
     // INSERT 3: su perfil
     await client.query('INSERT INTO perfiles (usuario_id) VALUES ($1)', [usuario.id]);
 
@@ -66,11 +67,11 @@ async function listarUsuarios() {
   return r.rows;
 }
 
-// RF-04 (paso 1): guarda el hash del token de recuperación. Vence en 1 hora (vigencia por definir).
+// RF-04 (paso 1): guarda el hash del token de recuperación. Vence en 30 minutos, como dice el correo.
 async function guardarToken(usuarioId, tokenHash) {
   await pool.query(
     `INSERT INTO tokens_recuperacion (usuario_id, token_hash, expira_en)
-     VALUES ($1, $2, now() + interval '1 hour')`,
+     VALUES ($1, $2, now() + interval '30 minutes')`,
     [usuarioId, tokenHash]
   );
 }

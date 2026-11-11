@@ -40,6 +40,7 @@ app.use('/api/guardados', require('./modulos/guardados/rutas'));
 app.use('/api/talleres', require('./modulos/talleres/rutas'));
 app.use('/api/chats', require('./modulos/mensajeria/rutas'));
 app.use('/api/cuentas', require('./modulos/cuentas/rutas'));
+app.use('/api/cursos', require('./modulos/cursos/rutas'));
 app.use('/api/moderacion', require('./modulos/moderacion/rutas')); // RF-13: revisión de apelaciones
 
 // Rutas de la API: RF-09 a RF-12.
