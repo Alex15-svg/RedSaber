@@ -1,10 +1,14 @@
-// Lógica de publicaciones: publicar dudas o soluciones (RF-06)
+// Lógica de publicaciones: publicar dudas, soluciones o publicaciones libres (RF-06)
 // y editar o borrar solo las propias (RF-07).
 const modelo = require('./modelo');
-const { leerId, leerPublicacion } = require('../../utils/validar');
+const { leerId, leerPublicacion, leerPublicacionLibre } = require('../../utils/validar');
 
 // Tipos que publica un estudiante. Las guías las publica el docente (RF-11, módulo guias).
-const TIPOS = ['pregunta', 'solucion'];
+// "publicacion" es la publicación libre (solo texto, como en una red social).
+const TIPOS = ['pregunta', 'solucion', 'publicacion'];
+
+// Valida el cuerpo según el tipo: la publicación libre solo exige el texto.
+const leerSegunTipo = (tipo, cuerpo) => (tipo === 'publicacion' ? leerPublicacionLibre(cuerpo) : leerPublicacion(cuerpo));
 
 // Busca la publicación de la URL y comprueba que sea del usuario.
 // Si algo falla, responde el error y devuelve null.
@@ -20,16 +24,16 @@ async function buscarPropia(req, res) {
         res.status(403).json({ error: 'Solo puedes modificar tus propias publicaciones.' });
         return null;
     }
-    return { id, estado: publicacion.estado };
+    return { id, estado: publicacion.estado, tipo: publicacion.tipo };
 }
 
-// RF-06: un estudiante publica una pregunta o la solución de un ejercicio.
+// RF-06: un estudiante publica una pregunta, la solución de un ejercicio o una publicación libre.
 async function crear(req, res) {
     const cuerpo = req.body || {};
-    const { errores, datos } = leerPublicacion(cuerpo);
+    const { errores, datos } = leerSegunTipo(cuerpo.tipo, cuerpo);
 
     if (!TIPOS.includes(cuerpo.tipo)) {
-        errores.push('El campo "tipo" debe ser "pregunta" o "solucion".');
+        errores.push('El campo "tipo" debe ser "pregunta", "solucion" o "publicacion".');
     }
     if (errores.length) {
         return res.status(400).json({ error: errores.join(' ') });
@@ -54,7 +58,7 @@ async function editar(req, res) {
         return res.status(409).json({ error: 'La publicación está deshabilitada por moderación y no se puede editar.' });
     }
 
-    const { errores, datos } = leerPublicacion(req.body || {});
+    const { errores, datos } = leerSegunTipo(publicacion.tipo, req.body || {});
     if (errores.length) {
         return res.status(400).json({ error: errores.join(' ') });
     }

@@ -1,6 +1,6 @@
 // Datos y funciones pequeñas que usan varias vistas.
 export const ROLES = { estudiante: 'Estudiante', docente: 'Docente', administrador: 'Administración' };
-export const TIPOS = { pregunta: 'Pregunta', solucion: 'Solución', guia: 'Guía docente' };
+export const TIPOS = { pregunta: 'Pregunta', solucion: 'Solución', guia: 'Guía docente', publicacion: 'Publicación' };
 export const CARRERAS = ['Ingeniería en Informática', 'Administración', 'Electricidad', 'Construcción'];
 
 export const iniciales = (nombre = '?') => nombre.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();

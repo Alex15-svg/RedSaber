@@ -4,7 +4,7 @@ const modelo = require('./modelo');
 const { textoOpcional } = require('../../utils/validar');
 
 const DONDE = ['todo', 'publicaciones', 'usuarios'];
-const TIPOS = ['pregunta', 'solucion', 'guia'];
+const TIPOS = ['pregunta', 'solucion', 'guia', 'publicacion'];
 
 async function buscar(req, res) {
     const q = textoOpcional(req.query.q, 100);
@@ -16,7 +16,7 @@ async function buscar(req, res) {
         return res.status(400).json({ error: 'El parámetro "en" debe ser todo, publicaciones o usuarios.' });
     }
     if (tipo && !TIPOS.includes(tipo)) {
-        return res.status(400).json({ error: 'El parámetro "tipo" debe ser pregunta, solucion o guia (ejercicios).' });
+        return res.status(400).json({ error: 'El parámetro "tipo" debe ser pregunta, solucion, guia (ejercicios) o publicacion.' });
     }
 
     // Solo se consulta lo pedido; lo demás vuelve como lista vacía.

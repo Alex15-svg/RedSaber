@@ -11,7 +11,7 @@ async function carreras() {
     const resultado = await pool.query(
         `SELECT carrera FROM usuarios WHERE carrera IS NOT NULL
          UNION
-         SELECT carrera FROM publicaciones
+         SELECT carrera FROM publicaciones WHERE carrera IS NOT NULL
          ORDER BY carrera`
     );
     return resultado.rows.map((fila) => fila.carrera);

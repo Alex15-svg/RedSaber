@@ -43,10 +43,21 @@ function leerPublicacion(cuerpo) {
     return { errores, datos };
 }
 
+// Largo máximo de una publicación libre (solo texto, sin título ni etiquetas).
+const LIMITE_PUBLICACION_LIBRE = 400;
+
+// Valida una publicación libre (tipo "publicacion"): solo lleva texto.
+// El resto de las columnas queda en null.
+function leerPublicacionLibre(cuerpo) {
+    const errores = revisarTextos(cuerpo, { descripcion: LIMITE_PUBLICACION_LIBRE });
+    const descripcion = typeof cuerpo.descripcion === 'string' ? cuerpo.descripcion.trim() : '';
+    return { errores, datos: { titulo: null, carrera: null, asignatura: null, seccion: null, descripcion } };
+}
+
 // Lee un texto opcional de la URL (?carrera=...). Devuelve null si viene vacío.
 function textoOpcional(valor, maximo) {
     if (typeof valor !== 'string' || valor.trim() === '') return null;
     return valor.trim().slice(0, maximo);
 }
 
-module.exports = { leerId, revisarTextos, esOpcion, leerPublicacion, textoOpcional };
+module.exports = { leerId, revisarTextos, esOpcion, leerPublicacion, leerPublicacionLibre, textoOpcional };

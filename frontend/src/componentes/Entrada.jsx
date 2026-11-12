@@ -16,6 +16,7 @@ export default function Entrada({ p, guardadas, alCambiar }) {
     const mia = p.autor_id === usuario.id;
     const deshabilitada = p.estado === 'deshabilitada';
     const guardada = guardadas?.has(p.id);
+    const libre = p.tipo === 'publicacion'; // publicación libre: solo texto, sin título ni etiquetas
     const listo = (mensaje) => { modal.cerrar(); avisar(mensaje); alCambiar(); };
 
     // Ejecuta una acción y muestra el error del servidor si falla.
@@ -40,7 +41,7 @@ export default function Entrada({ p, guardadas, alCambiar }) {
     const ocupacion = p.autor_ocupacion || (mia ? usuario.ocupacion : 'estudiante');
 
     return (
-        <article className={`rs-entry ${p.tipo === 'guia' ? 'rs-entry--guia' : ''} ${deshabilitada ? 'rs-entry--disabled' : ''}`} aria-labelledby={`t-${p.id}`}>
+        <article className={`rs-entry ${p.tipo === 'guia' ? 'rs-entry--guia' : ''} ${deshabilitada ? 'rs-entry--disabled' : ''}`} aria-labelledby={libre ? undefined : `t-${p.id}`}>
             <Avatar nombre={autor} ocupacion={ocupacion} />
             <div>
                 <div className="rs-entry-head">
@@ -50,15 +51,15 @@ export default function Entrada({ p, guardadas, alCambiar }) {
                 </div>
                 <div className="rs-tags">
                     <Etiqueta acento={p.tipo === 'guia'}>{TIPOS[p.tipo] || p.tipo}</Etiqueta>
-                    <Etiqueta suave>{p.asignatura}</Etiqueta>
+                    {!libre && <Etiqueta suave>{p.asignatura}</Etiqueta>}
                     {p.seccion && <Etiqueta suave>{p.seccion}</Etiqueta>}
                     {p.verificada && <Etiqueta>✓ Verificada</Etiqueta>}
                     {p.con_solucion && <Etiqueta>Con solución</Etiqueta>}
                     {deshabilitada && <Etiqueta acento>Deshabilitada por reportes</Etiqueta>}
                 </div>
-                <h2 className="rs-entry-title" id={`t-${p.id}`}>{p.titulo}</h2>
+                {!libre && <h2 className="rs-entry-title" id={`t-${p.id}`}>{p.titulo}</h2>}
                 {p.descripcion && <p className="rs-entry-text">{p.descripcion}</p>}
-                <p className="rs-meta mb-0">{p.carrera}</p>
+                {!libre && <p className="rs-meta mb-0">{p.carrera}</p>}
                 <div className="rs-actions">
                     {!deshabilitada && <Accion al={guardar} aria-pressed={!!guardada}>{guardada ? '■ Guardada' : '□ Guardar'}</Accion>}
                     {mia ? <>

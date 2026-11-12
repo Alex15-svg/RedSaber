@@ -50,7 +50,7 @@ async function quitar(usuarioId, tipo, id) {
 // No muestra publicaciones deshabilitadas por moderación.
 async function listar(usuarioId) {
     const publicaciones = await pool.query(
-        `SELECT p.id, p.tipo, p.titulo, p.carrera, p.asignatura, g.guardado_en
+        `SELECT p.id, p.tipo, p.titulo, LEFT(p.descripcion, 400) AS descripcion, p.carrera, p.asignatura, g.guardado_en
            FROM publicaciones_guardadas g
            JOIN publicaciones p ON p.id = g.publicacion_id
           WHERE g.usuario_id = $1 AND p.estado = 'activa'

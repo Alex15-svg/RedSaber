@@ -10,7 +10,7 @@ async function crear(autorId, datos) {
         `INSERT INTO publicaciones (autor_id, tipo, titulo, carrera, asignatura, seccion, descripcion)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING ${CAMPOS}`,
-        [autorId, datos.tipo, datos.titulo, datos.carrera, datos.asignatura, datos.seccion, datos.descripcion]
+        [autorId, datos.tipo, datos.titulo ?? null, datos.carrera ?? null, datos.asignatura ?? null, datos.seccion ?? null, datos.descripcion]
     );
     return resultado.rows[0];
 }
@@ -24,10 +24,10 @@ async function listarDeAutor(autorId) {
     return resultado.rows;
 }
 
-// Devuelve { autor_id, estado } de una publicación, o null si no existe.
+// Devuelve { autor_id, estado, tipo } de una publicación, o null si no existe.
 async function buscarDueno(id) {
     const resultado = await pool.query(
-        'SELECT autor_id, estado FROM publicaciones WHERE id = $1',
+        'SELECT autor_id, estado, tipo FROM publicaciones WHERE id = $1',
         [id]
     );
     return resultado.rows[0] || null;
@@ -40,7 +40,7 @@ async function editar(id, datos) {
                 actualizado_en = now()
           WHERE id = $1
           RETURNING ${CAMPOS}`,
-        [id, datos.titulo, datos.carrera, datos.asignatura, datos.seccion, datos.descripcion]
+        [id, datos.titulo ?? null, datos.carrera ?? null, datos.asignatura ?? null, datos.seccion ?? null, datos.descripcion]
     );
     return resultado.rows[0];
 }

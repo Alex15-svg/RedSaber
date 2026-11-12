@@ -23,13 +23,28 @@ export function FormReportar({ tipo, id, alListo }) {
     );
 }
 
-// RF-07: editar una publicación propia (el backend exige los cinco textos).
+// RF-07: editar una publicación propia (el backend exige los cinco textos; la publicación libre solo el texto).
 export function FormEditar({ p, alListo }) {
+    const libre = p.tipo === 'publicacion';
     const { errores, ocupado, onSubmit } = useFormulario(async (datos, marcar) => {
+        if (libre) {
+            if (!exigir(datos, [['descripcion', 'Escribe algo para publicar.']], marcar)) return;
+            await api('PUT', `/publicaciones/${p.id}`, textos(datos, ['descripcion']));
+            alListo('Cambios guardados.');
+            return;
+        }
         if (!exigir(datos, CAMPOS.map((c) => [c, 'Este campo es obligatorio.']), marcar)) return;
         await api('PUT', `/publicaciones/${p.id}`, textos(datos, CAMPOS));
         alListo('Cambios guardados.');
     });
+    if (libre) {
+        return (
+            <form className="rs-form" onSubmit={onSubmit} noValidate>
+                <Campo nombre="descripcion" etiqueta="Publicación" como="textarea" rows={4} maxLength={400} defaultValue={p.descripcion} error={errores.descripcion} />
+                <Enviar ocupado={ocupado} error={errores.general}>Guardar cambios</Enviar>
+            </form>
+        );
+    }
     return (
         <form className="rs-form" onSubmit={onSubmit} noValidate>
             <Campo nombre="titulo" etiqueta="Título" defaultValue={p.titulo} maxLength={200} error={errores.titulo} />

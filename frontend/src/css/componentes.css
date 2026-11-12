@@ -68,6 +68,9 @@
 }
 .rs-compose-head .rs-label { color: var(--rs-bg); }
 .rs-compose-body { padding: 1rem; }
+/* Selector «Duda o solución» / «Publicación» dentro de la ventana de publicar. */
+.rs-compose-modes { display: flex; border-bottom: 1px solid var(--rs-rule); }
+.rs-compose-modes .rs-tab { flex: 1; }
 .rs-compose textarea { min-height: 88px; }
 
 .rs-entry {

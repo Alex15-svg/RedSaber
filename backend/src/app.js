@@ -23,11 +23,12 @@ pool.query('SELECT NOW()')
 
 
 app.get('/', (req, res) => {
-    res.send('>> Hola mundo desde Express <<')
+    res.redirect('/app');
 });
 
 app.listen(PORT, () => {
-    console.log(`**Servidor corriendo en el puerto: https://localhost:${PORT}**`);
+    console.log(`REDSABER`);
+    console.log(`**Servidor corriendo en el puerto: http://localhost:${PORT}**`);
 });
 
 app.use(express.urlencoded({ extended: true }));
