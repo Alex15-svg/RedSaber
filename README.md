@@ -12,7 +12,7 @@ frontend/           Interfaz web en React (Vite)
   src/              Componentes, vistas y estilos (css/)
   public/img/       Glifo e íconos
   index.html        Página de entrada
-docs/               Documentación del código
+README/             Documentacion.
 ```
 
 ## Cómo iniciar
