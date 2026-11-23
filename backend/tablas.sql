@@ -85,17 +85,21 @@ CREATE TABLE publicaciones (
     id               INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     autor_id         INTEGER      NOT NULL REFERENCES usuarios (id) ON DELETE CASCADE,
     tipo             VARCHAR(20)  NOT NULL,
-    titulo           VARCHAR(200) NOT NULL,
-    carrera          VARCHAR(120) NOT NULL,
-    asignatura       VARCHAR(120) NOT NULL,
-    seccion          VARCHAR(30)  NOT NULL,
+    titulo           VARCHAR(200),
+    carrera          VARCHAR(120),
+    asignatura       VARCHAR(120),
+    seccion          VARCHAR(30),
     descripcion      TEXT         NOT NULL,
     estado           VARCHAR(20)  NOT NULL DEFAULT 'activa',
     deshabilitado_en TIMESTAMPTZ,
     creado_en        TIMESTAMPTZ  NOT NULL DEFAULT now(),
     actualizado_en   TIMESTAMPTZ  NOT NULL DEFAULT now(),
     CONSTRAINT ck_publicaciones_tipo
-        CHECK (tipo IN ('pregunta', 'solucion', 'guia')),
+        CHECK (tipo IN ('pregunta', 'solucion', 'guia', 'publicacion')),
+    -- La publicacion libre (RF-06) solo lleva texto; los demas tipos exigen sus etiquetas.
+    CONSTRAINT ck_publicaciones_etiquetas
+        CHECK (tipo = 'publicacion' OR (titulo IS NOT NULL AND carrera IS NOT NULL
+               AND asignatura IS NOT NULL AND seccion IS NOT NULL)),
     CONSTRAINT ck_publicaciones_estado
         CHECK (estado IN ('activa', 'deshabilitada')),
     CONSTRAINT ck_publicaciones_deshabilitado

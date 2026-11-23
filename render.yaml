@@ -1,0 +1,39 @@
+# Despliegue de RedSaber en Render (https://render.com) como Blueprint.
+# Crea dos recursos gratuitos: el servidor web (Node + interfaz React) y la base PostgreSQL.
+# La primera vez que arranca, el servidor crea las tablas de backend/tablas.sql.
+services:
+  - type: web
+    name: redsaber
+    runtime: node
+    plan: free
+    region: virginia
+    branch: main
+    # Compila la interfaz React (frontend/dist) e instala el backend que la sirve en /app.
+    buildCommand: cd frontend && npm ci && npm run build && cd ../backend && npm ci
+    startCommand: cd backend && npm start
+    healthCheckPath: /app/
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: redsaber-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MODERACION_UMBRAL
+        value: "3"
+      - key: PLAZO_APELACION_DIAS
+        value: "7"
+      # Correos que reciben el rol de docente o administrador al registrarse (separados por coma).
+      - key: CORREOS_DOCENTES
+        sync: false
+      - key: CORREOS_ADMIN
+        sync: false
+
+databases:
+  - name: redsaber-db
+    plan: free
+    region: virginia
+    databaseName: redsaber_db
+    user: redsaber
