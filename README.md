@@ -16,11 +16,12 @@ Integrantes: Fabián Nuñez y Samuel Carrasco.
 3. [Estructura del repositorio](#estructura-del-repositorio)
 4. [Instalación](#instalación)
 5. [Configuración (.env)](#configuración-env)
-6. [Uso](#uso)
-7. [API](#api)
-8. [Pruebas](#pruebas)
-9. [Problemas conocidos](#problemas-conocidos)
-10. [Cómo contribuir](#cómo-contribuir)
+6. [Despliegue en Render](#despliegue-en-render)
+7. [Uso](#uso)
+8. [API](#api)
+9. [Pruebas](#pruebas)
+10. [Problemas conocidos](#problemas-conocidos)
+11. [Cómo contribuir](#cómo-contribuir)
 
 ---
 
@@ -154,7 +155,27 @@ El archivo `backend/.env` no se sube a GitHub. Variables disponibles:
 
 Si no se configura SMTP, el código de recuperación se muestra en la consola del servidor como `[CORREO SIMULADO]`.
 
-El servidor usa el puerto **3000**.
+El servidor usa el puerto **3000**, salvo que se defina `PORT` (Render lo define solo).
+
+En la nube se puede usar `DATABASE_URL` (una sola cadena de conexión) en lugar de las variables `PG*`.
+`PGSSL=true` activa el cifrado, necesario con la URL externa de una base en Render.
+
+## Despliegue en Render
+
+El archivo `render.yaml` describe el despliegue (Blueprint) con dos recursos gratuitos: el servidor web
+y una base PostgreSQL.
+
+1. En [Render](https://render.com), **New → Blueprint** y elegir este repositorio (rama `main`).
+2. Completar `CORREOS_DOCENTES` y `CORREOS_ADMIN` cuando Render los pida. `JWT_SECRET` se genera solo.
+3. Render compila la interfaz, instala el backend y lo inicia. En el primer arranque, el servidor detecta
+   la base vacía y ejecuta `backend/tablas.sql`.
+4. La aplicación queda en `https://<nombre>.onrender.com/app`.
+
+En el plan gratuito, el servidor se suspende tras 15 minutos sin uso: la primera visita tarda unos 50 s.
+Los archivos subidos (imágenes y PDF) se pierden en cada reinicio, porque el disco no es permanente.
+
+Las bases locales creadas con una versión anterior de `tablas.sql` se actualizan con
+`psql -U postgres -d redsaber_db -f backend/migracion_publicacion_libre.sql`.
 
 ## Uso
 
@@ -247,8 +268,6 @@ newman run coleccion.postman_collection.json
 
 Pendientes de corregir (detalle en el informe del proyecto):
 
-- La **publicación libre** responde con error 500: `tablas.sql` aún no admite el tipo `publicacion` ni
-  publicaciones sin título, carrera, asignatura y sección.
 - Una **cuenta deshabilitada** conserva el acceso hasta que vence su token (2 horas).
 - Algunos datos con tipo o formato inesperado provocan error 500 (tipos incorrectos en el registro,
   carácter nulo en el título, id fuera de rango).
