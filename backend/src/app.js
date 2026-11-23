@@ -11,6 +11,15 @@ const pool = require('./config/dbPostgre'); // Importa la configuración de la b
 
 
 
+// En Render, la app recibe las solicitudes a través de su proxy: se confía en él para leer la IP real
+// (la usa el límite de intentos). En local no hay proxy, así que no se confía en X-Forwarded-For.
+if (process.env.RENDER) app.set('trust proxy', 1);
+
+// Cabeceras de seguridad (helmet) en todas las respuestas, y sin caché en la API.
+const seguridad = require('./config/seguridad');
+app.use(seguridad.cabeceras);
+app.use('/api', seguridad.sinCache);
+
 // Middleware(s) para parsear el cuerpo de las solicitudes.
 app.use(express.json());
 
@@ -37,6 +46,7 @@ app.listen(PORT, () => {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(require('./utils/validar').rechazarNulos); // el carácter \0 se responde con 400, no con un 500
 
 // Rutas de la API: RF-05 a RF-08, RF-16 y RF-17.
 app.use('/api/perfil', require('./modulos/perfil/rutas'));
@@ -53,6 +63,9 @@ app.use('/api/buscar', require('./modulos/busqueda/rutas'));
 app.use('/api/documentos', require('./modulos/documentos/rutas'));
 app.use('/api/guias', require('./modulos/guias/rutas'));
 app.use('/api/moderacion', require('./modulos/reportes/rutas')); // RF-12: reportes y apelaciones
+
+// Cualquier otra ruta de la API responde 404 en JSON (no la página HTML de Express).
+app.use('/api', (req, res) => res.status(404).json({ error: 'La ruta no existe.' }));
 
 // Imágenes de perfil subidas por los usuarios (RF-05).
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));

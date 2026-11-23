@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const modelo = require('./modelo');
 const { enviarCorreo } = require('../../utils/correo');
+const { leerCuenta } = require('../../utils/validar');
 
 // RF-02: la ocupación la decide el servidor según estas listas del .env (separadas por coma).
 const lista = (v) => (v || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
@@ -13,17 +14,13 @@ const sha256 = (t) => crypto.createHash('sha256').update(t).digest('hex');
 // RF-01
 async function registrar(req, res) {
   try {
-    const { nombre, correo, contrasena, carrera } = req.body || {};
-    if (!nombre || !correo || !contrasena)
-      return res.status(400).json({ error: 'Faltan campos obligatorios' });
-    if (!correo.toLowerCase().endsWith('@inacapmail.cl'))
-      return res.status(400).json({ error: 'Usa tu correo @inacapmail.cl' });
-    if (contrasena.length < 8)
-      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' });
+    const { errores, datos } = leerCuenta(req.body);
+    if (errores.length) return res.status(400).json({ error: errores.join(' ') });
+    const { nombre, correo, contrasena, carrera } = datos;
     if (await modelo.buscarPorCorreo(correo))
       return res.status(409).json({ error: 'Ese correo ya está registrado' });
 
-    const c = correo.toLowerCase();
+    const c = correo;
     const ocupacion = CORREOS_ADMIN.includes(c) ? 'administrador' : CORREOS_DOCENTES.includes(c) ? 'docente' : 'estudiante';
     const contrasenaHash = await bcrypt.hash(contrasena, 10);
     const usuario = await modelo.crearUsuario({ nombre, correo, contrasenaHash, ocupacion, carrera });
@@ -40,7 +37,7 @@ async function registrar(req, res) {
 async function iniciarSesionCorreo(req, res) {
   try {
     const { correo, contrasena } = req.body || {};
-    if (!correo || !contrasena)
+    if (typeof correo !== 'string' || typeof contrasena !== 'string' || !correo || !contrasena)
       return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
 
     const usuario = await modelo.buscarPorCorreo(correo);
@@ -63,7 +60,9 @@ async function iniciarSesionCorreo(req, res) {
 // RF-04 (paso 1): genera el token. Sin correo real, se imprime en la consola.
 async function recuperar(req, res) {
   try {
-    const usuario = await modelo.buscarPorCorreo((req.body || {}).correo || '');
+    const correo = (req.body || {}).correo;
+    // Si el correo no es texto no se busca nada, pero la respuesta es la misma (no revela si existe).
+    const usuario = typeof correo === 'string' ? await modelo.buscarPorCorreo(correo) : null;
     if (usuario) {
       const token = crypto.randomBytes(32).toString('hex');
       await modelo.guardarToken(usuario.id, sha256(token));
@@ -87,7 +86,8 @@ async function recuperar(req, res) {
 async function restablecer(req, res) {
   try {
     const { token, contrasena } = req.body || {};
-    if (!token || !contrasena || contrasena.length < 8)
+    if (typeof token !== 'string' || typeof contrasena !== 'string' || contrasena.trim().length < 8
+        || Buffer.byteLength(contrasena) > 72)
       return res.status(400).json({ error: 'Token y nueva contraseña (mín. 8) son obligatorios' });
     const ok = await modelo.cambiarContrasenaConToken(sha256(token), await bcrypt.hash(contrasena, 10));
     if (!ok) return res.status(400).json({ error: 'Token inválido o vencido' });

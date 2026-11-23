@@ -1,11 +1,12 @@
-// Verifica que la solicitud traiga un token JWT válido (RNF-01).
-// Si es válido, deja los datos del usuario en req.usuario = { id, ocupacion },
+// Verifica que la solicitud traiga un token JWT válido (RNF-01) y que la cuenta siga activa.
+// Si todo está bien, deja los datos del usuario en req.usuario = { id, ocupacion },
 // que es lo que usan roles.js y los controladores.
-// El inicio de sesión (RF-03) debe firmar el token con esos mismos datos:
+// El inicio de sesión (RF-03) firma el token con:
 //   jwt.sign({ id: usuario.id, ocupacion: usuario.ocupacion }, process.env.JWT_SECRET)
 const jwt = require('jsonwebtoken');
+const pool = require('../config/dbPostgre');
 
-function auth(req, res, next) {
+async function auth(req, res, next) {
     // El token llega en la cabecera:  Authorization: Bearer <token>
     const cabecera = req.headers.authorization || '';
     const [tipo, token] = cabecera.split(' ');
@@ -14,12 +15,33 @@ function auth(req, res, next) {
         return res.status(401).json({ error: 'Debes iniciar sesión.' });
     }
 
+    let datos;
     try {
-        const datos = jwt.verify(token, process.env.JWT_SECRET);
-        req.usuario = { id: Number(datos.id), ocupacion: datos.ocupacion };
-        next();
+        // Solo se acepta HS256: evita que un token firmado con otro algoritmo pase la verificación.
+        datos = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     } catch {
-        res.status(401).json({ error: 'La sesión no es válida o ya expiró. Inicia sesión otra vez.' });
+        datos = null;
+    }
+    const id = Number(datos && datos.id);
+    if (!Number.isInteger(id) || id <= 0 || id > 2147483647) {
+        return res.status(401).json({ error: 'La sesión no es válida o ya expiró. Inicia sesión otra vez.' });
+    }
+
+    try {
+        // El estado y el rol se leen de la base en cada solicitud: una cuenta deshabilitada
+        // pierde el acceso de inmediato, aunque su token aún no venza (OWASP A01 y A07).
+        const r = await pool.query('SELECT ocupacion, estado FROM usuarios WHERE id = $1', [id]);
+        const usuario = r.rows[0];
+        if (!usuario) {
+            return res.status(401).json({ error: 'La cuenta ya no existe. Inicia sesión otra vez.' });
+        }
+        if (usuario.estado !== 'activa') {
+            return res.status(403).json({ error: 'Cuenta deshabilitada' });
+        }
+        req.usuario = { id, ocupacion: usuario.ocupacion };
+        next();
+    } catch (error) {
+        next(error);
     }
 }
 

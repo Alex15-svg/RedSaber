@@ -13,8 +13,12 @@ async function solicitar(req, res) {
     const errores = revisarTextos(b, { nombreGrupo: 120, nombre: 200, objetivo: 1000 });
     const docenteId = leerId(b.docenteId);
     if (!docenteId) errores.push('docenteId no es válido.');
-    const correos = Array.isArray(b.correos) ? b.correos.filter((x) => typeof x === 'string') : [];
+    if (!Array.isArray(b.correos) || !b.correos.every((x) => typeof x === 'string'))
+      errores.push('correos debe ser una lista de correos.');
     if (errores.length) return res.status(400).json({ error: errores.join(' ') });
+    // Los correos repetidos cuentan una sola vez; el grupo necesita al menos otro integrante.
+    const correos = [...new Set(b.correos.map((x) => x.trim().toLowerCase()).filter(Boolean))];
+    if (!correos.length) return res.status(400).json({ error: 'El grupo necesita al menos dos integrantes.' });
 
     const r = await modelo.crearSolicitud({
       solicitanteId: req.usuario.id,
@@ -57,7 +61,9 @@ async function listaIngresados(req, res) {
   try {
     const id = leerId(req.params.id);
     if (!id) return res.status(400).json({ error: 'Id no válido' });
-    res.json(await modelo.ingresados(id, req.usuario.id));
+    const lista = await modelo.ingresados(id, req.usuario.id);
+    if (!lista) return res.status(404).json({ error: 'El curso no existe o no es tuyo' });
+    res.json(lista);
   } catch (e) { falla(res, e); }
 }
 

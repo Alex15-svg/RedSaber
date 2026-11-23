@@ -151,6 +151,7 @@ El archivo `backend/.env` no se sube a GitHub. Variables disponibles:
 | `CORREOS_ADMIN` | No | Correos completos, separados por coma, que se registran como administradores |
 | `MODERACION_UMBRAL` | No | Reportes necesarios para deshabilitar algo (por defecto 3) |
 | `PLAZO_APELACION_DIAS` | No | Días para apelar (por defecto 7) |
+| `LIMITE_INTENTOS` | No | Intentos por correo e IP cada 15 min (por defecto 10 inicios de sesión fallidos y 5 recuperaciones; si se define, se usa para ambos) |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | No | Servidor de correo para la recuperación de contraseña |
 
 Si no se configura SMTP, el código de recuperación se muestra en la consola del servidor como `[CORREO SIMULADO]`.
@@ -254,8 +255,9 @@ La API se probó contra un servidor local y una base de datos temporal:
 | Prueba | Herramienta | Resultado |
 |---|---|---|
 | Integración de RF-01 a RF-17 | 5 scripts en Node.js (172 casos) | 172 de 172 aprobados |
-| Calidad: requerimientos, permisos y reglas de negocio | Postman + Newman (150 pruebas, 685 verificaciones) | 98,7 % aprobadas |
-| Seguridad y robustez: inyección SQL, XSS, JWT, IDOR, concurrencia | Postman + Newman (207 pruebas, 1.149 verificaciones) | 97,0 % aprobadas |
+| Endurecimiento: cuentas deshabilitadas, cabeceras, límite de intentos, validación | 1 script en Node.js (26 casos) | 26 de 26 aprobados |
+| Calidad: requerimientos, permisos y reglas de negocio | Postman + Newman (150 pruebas, 685 verificaciones) | 98,7 % aprobadas (12-11, antes de las correcciones) |
+| Seguridad y robustez: inyección SQL, XSS, JWT, IDOR, concurrencia | Postman + Newman (207 pruebas, 1.149 verificaciones) | 97,0 % aprobadas (12-11, antes de las correcciones) |
 
 Para ejecutar una colección de Postman desde la consola con Newman:
 
@@ -266,16 +268,15 @@ newman run coleccion.postman_collection.json
 
 ## Problemas conocidos
 
-Pendientes de corregir (detalle en el informe del proyecto):
+Los defectos que registró el informe de la EVA 3 (sección VI-c) se corrigieron el 23-11-2026:
+cuentas deshabilitadas, validación de tipos y formatos, observaciones de cursos, cabeceras de seguridad
+(`helmet`), límite de intentos (`express-rate-limit`) y 404 de la API en JSON.
 
-- Una **cuenta deshabilitada** conserva el acceso hasta que vence su token (2 horas).
-- Algunos datos con tipo o formato inesperado provocan error 500 (tipos incorrectos en el registro,
-  carácter nulo en el título, id fuera de rango).
-- Se aceptan algunos datos inválidos: correo con doble arroba y contraseña o nombre formados solo por espacios.
-- En cursos: los correos repetidos se rechazan con un mensaje equivocado, se acepta un grupo de una sola persona
-  y un docente que consulta un curso ajeno recibe una lista vacía en vez de un error 404.
-- Faltan protecciones de endurecimiento: límite de intentos de inicio de sesión, cabeceras de seguridad
-  (por ejemplo, con `helmet`) y un 404 de la API en formato JSON.
+Pendientes:
+
+- RF-18 y RF-21 están parciales, y la mensajería en tiempo real (Socket.IO) no está implementada.
+- El texto con HTML se guarda tal cual; no es un riesgo en la interfaz porque React lo escapa al mostrarlo.
+- En el plan gratuito de Render, los archivos subidos se pierden al reiniciar y la base no tiene respaldo.
 
 ## Cómo contribuir
 

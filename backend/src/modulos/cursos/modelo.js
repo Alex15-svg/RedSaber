@@ -13,10 +13,9 @@ async function crearSolicitud({ solicitanteId, nombreGrupo, correos, docenteId, 
        WHERE lower(u.correo_institucional) = ANY($1::text[])`,
       [correos.map((x) => x.toLowerCase())]
     );
-    if (e.rows.length !== correos.length)
-      return { error: 'Algún integrante no existe o no es estudiante' };
-
+    if (e.rows.length !== correos.length) return { error: 'Algún integrante no existe o no es estudiante' };
     const ids = [...new Set([solicitanteId, ...e.rows.map((f) => f.id)])];
+    if (ids.length < 2) return { error: 'El grupo necesita al menos dos integrantes.' }; // solo su propio correo
 
     const g = await c.query('INSERT INTO grupos (nombre) VALUES ($1) RETURNING id', [nombreGrupo]);
     const grupoId = g.rows[0].id;
@@ -73,16 +72,14 @@ async function cambiarEstado(cursoId, docenteId, desde, hacia) {
   return r.rows[0] || null;
 }
 
-// RF-15: lista de usuarios ingresados (solo si el curso es del docente)
+// RF-15: lista de usuarios ingresados. Devuelve null si el curso no existe o no es del docente.
 async function ingresados(cursoId, docenteId) {
+  const c = await pool.query('SELECT 1 FROM cursos WHERE id = $1 AND docente_id = $2', [cursoId, docenteId]);
+  if (!c.rows[0]) return null;
   const r = await pool.query(
-    `SELECT u.id, u.nombre, u.correo_institucional, e.ingresado_en
-     FROM curso_estudiantes e
-     JOIN usuarios u ON u.id = e.estudiante_id
-     JOIN cursos c ON c.id = e.curso_id
-     WHERE e.curso_id = $1 AND c.docente_id = $2
-     ORDER BY e.ingresado_en`,
-    [cursoId, docenteId]
+    `SELECT u.id, u.nombre, u.correo_institucional, e.ingresado_en FROM curso_estudiantes e
+     JOIN usuarios u ON u.id = e.estudiante_id WHERE e.curso_id = $1 ORDER BY e.ingresado_en`,
+    [cursoId]
   );
   return r.rows;
 }
