@@ -7,7 +7,7 @@ services:
     runtime: node
     plan: free
     region: virginia
-    branch: main
+    # Sin «branch»: el servicio usa la rama elegida al crear el Blueprint.
     # Compila la interfaz React (frontend/dist) e instala el backend que la sirve en /app.
     buildCommand: cd frontend && npm ci && npm run build && cd ../backend && npm ci
     startCommand: cd backend && npm start
