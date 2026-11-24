@@ -34,14 +34,20 @@ async function buscar(id) {
     return resultado.rows[0] || null;
 }
 
-async function crear({ titulo, area, archivo, tamanoMb }) {
+// El PDF guardado en la base, o null si el documento es anterior y su PDF está en disco.
+async function contenido(id) {
+    const resultado = await pool.query('SELECT contenido FROM documentos WHERE id = $1', [id]);
+    return resultado.rows[0] ? resultado.rows[0].contenido : null;
+}
+
+async function crear({ titulo, area, archivo, contenido: bytes, tamanoMb }) {
     const resultado = await pool.query(
-        `INSERT INTO documentos (titulo, area, archivo_url, tamano_mb)
-         VALUES ($1, $2, $3, $4)
+        `INSERT INTO documentos (titulo, area, archivo_url, contenido, tamano_mb)
+         VALUES ($1, $2, $3, $4, $5)
          RETURNING id, titulo, area, tamano_mb, creado_en`,
-        [titulo, area, archivo, tamanoMb]
+        [titulo, area, archivo, bytes, tamanoMb]
     );
     return resultado.rows[0];
 }
 
-module.exports = { areas, listar, buscar, crear };
+module.exports = { areas, listar, buscar, contenido, crear };

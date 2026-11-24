@@ -1,6 +1,6 @@
 // Lógica de la documentación por áreas (RF-10): ver áreas y documentos,
 // leerlos en el navegador, descargarlos y subir nuevos (docentes y administración).
-const fs = require('fs/promises');
+const crypto = require('crypto');
 const path = require('path');
 const modelo = require('./modelo');
 const { CARPETA } = require('./subida');
@@ -35,25 +35,31 @@ async function ver(req, res) {
     res.json(datos);
 }
 
-// Vista de lectura: el PDF se abre dentro del navegador («inline»).
-async function leer(req, res) {
+// Envía el PDF: desde la base si está ahí; si no, desde la carpeta (documentos anteriores al cambio).
+// «inline» lo abre en el navegador (vista de lectura); «attachment» lo descarga con el título como nombre.
+async function enviarPdf(req, res, modo) {
     const documento = await buscarDocumento(req, res);
     if (!documento) return;
-    // Las cabeceras van en las opciones: así solo se aplican si el archivo realmente se envía.
-    const cabeceras = { 'Content-Type': 'application/pdf', 'Content-Disposition': `inline; filename="documento-${documento.id}.pdf"` };
-    res.sendFile(rutaArchivo(documento), { headers: cabeceras }, (error) => {
+    const nombre = modo === 'inline' ? `documento-${documento.id}.pdf` : `${documento.titulo}.pdf`;
+    const bytes = await modelo.contenido(documento.id);
+    if (bytes) {
+        res.attachment(nombre); // arma Content-Disposition con el nombre bien codificado
+        if (modo === 'inline') res.set('Content-Disposition', res.get('Content-Disposition').replace('attachment', 'inline'));
+        return res.type('application/pdf').send(bytes);
+    }
+    const opciones = { headers: { 'Content-Type': 'application/pdf' } };
+    const alTerminar = (error) => {
         if (error && !res.headersSent) res.status(404).json({ error: 'El archivo del documento no está disponible.' });
-    });
+    };
+    if (modo === 'inline') {
+        opciones.headers['Content-Disposition'] = `inline; filename="${nombre}"`;
+        return res.sendFile(rutaArchivo(documento), opciones, alTerminar);
+    }
+    res.download(rutaArchivo(documento), nombre, alTerminar);
 }
 
-// Descarga: el navegador guarda el PDF con el título del documento como nombre.
-async function descargar(req, res) {
-    const documento = await buscarDocumento(req, res);
-    if (!documento) return;
-    res.download(rutaArchivo(documento), `${documento.titulo}.pdf`, (error) => {
-        if (error && !res.headersSent) res.status(404).json({ error: 'El archivo del documento no está disponible.' });
-    });
-}
+const leer = (req, res) => enviarPdf(req, res, 'inline');
+const descargar = (req, res) => enviarPdf(req, res, 'attachment');
 
 // Subir un documento. Cuerpo: formulario con "titulo", "area" y el PDF en "archivo".
 async function crear(req, res) {
@@ -61,16 +67,14 @@ async function crear(req, res) {
     const errores = revisarTextos(cuerpo, { titulo: 200, area: 120 });
     if (!req.file) errores.push('Adjunta el documento en PDF en el campo "archivo".');
 
-    if (errores.length) {
-        // Si multer ya guardó el archivo pero los datos no sirven, se borra para no dejar basura.
-        if (req.file) await fs.unlink(req.file.path).catch(() => {});
-        return res.status(400).json({ error: errores.join(' ') });
-    }
+    // El archivo está en memoria: si los datos no sirven, simplemente no se guarda.
+    if (errores.length) return res.status(400).json({ error: errores.join(' ') });
 
     const documento = await modelo.crear({
         titulo: cuerpo.titulo.trim(),
         area: cuerpo.area.trim(),
-        archivo: req.file.filename,
+        archivo: `${Date.now()}-${crypto.randomBytes(4).toString('hex')}.pdf`, // nombre interno de referencia
+        contenido: req.file.buffer,
         tamanoMb: Math.max(0.01, Number((req.file.size / 1048576).toFixed(2)))
     });
     res.status(201).json(documento);

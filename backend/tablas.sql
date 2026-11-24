@@ -121,6 +121,7 @@ CREATE TABLE documentos (
     titulo      VARCHAR(200)  NOT NULL,
     area        VARCHAR(120)  NOT NULL,
     archivo_url TEXT          NOT NULL,
+    contenido   BYTEA,        -- el PDF dentro de la base: no se pierde si el servidor reinicia
     tamano_mb   NUMERIC(6, 2) NOT NULL CHECK (tamano_mb > 0),
     creado_en   TIMESTAMPTZ   NOT NULL DEFAULT now()
 );
