@@ -7,6 +7,7 @@ import { useDatos } from '../ganchos.js';
 import { ir } from '../utiles.js';
 import { Estado, Vacio } from '../componentes/Piezas.jsx';
 import NuevoChat from './NuevoChat.jsx';
+import ChatVentana from './ChatVentana.jsx';
 
 export default function Mensajes({ parametros }) {
     const avisar = useAviso();
@@ -72,8 +73,7 @@ function Chats({ chats, actual, alElegir }) {
             </div>
             <div className="rs-chat-window">{chat ? <>
                 <div className="rs-chat-head"><strong className="rs-h3 mb-0">Chat {chat.tipo} Nº {chat.id}</strong><span className="rs-tag">{chat.participantes} personas</span></div>
-                <div className="rs-messages"><p className="rs-notice mb-0"><strong>Próximamente</strong> · El envío de mensajes en tiempo real (Socket.IO)
-                    aún no está en el backend. Por ahora se crean los chats y se gestionan las invitaciones.</p></div>
+                <ChatVentana chat={chat} />
             </> : <Vacio titulo="Sin chats">Crea un chat o invita a alguien desde Explorar.</Vacio>}</div>
         </div>
     );

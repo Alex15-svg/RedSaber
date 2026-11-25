@@ -39,10 +39,13 @@ app.get('/', (req, res) => {
     res.redirect('/app');
 });
 
-app.listen(PORT, () => {
+const servidor = app.listen(PORT, () => {
     console.log(`REDSABER`);
     console.log(`**Servidor corriendo en el puerto: http://localhost:${PORT}**`);
 });
+
+// RF-17: mensajes de chat en tiempo real (Socket.IO) sobre el mismo servidor y puerto.
+require('./modulos/mensajeria/tiempoReal').iniciar(servidor);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

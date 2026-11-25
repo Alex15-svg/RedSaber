@@ -1,7 +1,12 @@
 // Lógica de chats (RF-17): crear un chat invitando a otros usuarios,
 // ver mis chats y mis invitaciones, y aceptar o rechazar invitaciones.
 const modelo = require('./modelo');
-const { leerId } = require('../../utils/validar');
+const mensajes = require('./mensajes');
+const tiempoReal = require('./tiempoReal');
+const { leerId, revisarTextos } = require('../../utils/validar');
+
+// Largo máximo de un mensaje de chat.
+const LARGO_MENSAJE = 1000;
 
 // Revisa la lista de invitados. Devuelve un mensaje de error, o null si está todo bien.
 function revisarInvitados(tipo, ids, creadorId) {
@@ -58,4 +63,30 @@ async function responder(req, res, aceptar) {
 const aceptar = (req, res) => responder(req, res, true);
 const rechazar = (req, res) => responder(req, res, false);
 
-module.exports = { crear, misChats, invitaciones, aceptar, rechazar };
+// Revisa que el chat de la URL exista y que el usuario participe. Si no, responde 404 y devuelve null
+// (no se distingue «no existe» de «no participas», para no revelar qué chats existen).
+async function chatPropio(req, res) {
+    const id = leerId(req.params.id);
+    if (id && await mensajes.esParticipante(id, req.usuario.id)) return id;
+    res.status(404).json({ error: 'El chat no existe o no participas en él.' });
+    return null;
+}
+
+// RF-17: historial del chat (los 100 mensajes más recientes).
+async function verMensajes(req, res) {
+    const id = await chatPropio(req, res);
+    if (id) res.json(await mensajes.listar(id));
+}
+
+// RF-17: enviar un mensaje. Cuerpo: { "contenido": "Hola" }. Se guarda y se reparte en tiempo real.
+async function enviar(req, res) {
+    const errores = revisarTextos(req.body || {}, { contenido: LARGO_MENSAJE });
+    if (errores.length) return res.status(400).json({ error: errores.join(' ') });
+    const id = await chatPropio(req, res);
+    if (!id) return;
+    const mensaje = await mensajes.crear(id, req.usuario.id, req.body.contenido.trim());
+    tiempoReal.repartir(mensaje);
+    res.status(201).json(mensaje);
+}
+
+module.exports = { crear, misChats, invitaciones, aceptar, rechazar, verMensajes, enviar };

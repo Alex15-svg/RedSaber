@@ -6,15 +6,9 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../config/dbPostgre');
 
-async function auth(req, res, next) {
-    // El token llega en la cabecera:  Authorization: Bearer <token>
-    const cabecera = req.headers.authorization || '';
-    const [tipo, token] = cabecera.split(' ');
-
-    if (tipo !== 'Bearer' || !token) {
-        return res.status(401).json({ error: 'Debes iniciar sesión.' });
-    }
-
+// Revisa un token. Devuelve { usuario: { id, ocupacion } } si sirve, o { status, error } si no.
+// La usan este middleware y la conexión en tiempo real de los chats (Socket.IO).
+async function revisarToken(token) {
     let datos;
     try {
         // Solo se acepta HS256: evita que un token firmado con otro algoritmo pase la verificación.
@@ -24,21 +18,31 @@ async function auth(req, res, next) {
     }
     const id = Number(datos && datos.id);
     if (!Number.isInteger(id) || id <= 0 || id > 2147483647) {
-        return res.status(401).json({ error: 'La sesión no es válida o ya expiró. Inicia sesión otra vez.' });
+        return { status: 401, error: 'La sesión no es válida o ya expiró. Inicia sesión otra vez.' };
+    }
+
+    // El estado y el rol se leen de la base en cada solicitud: una cuenta deshabilitada
+    // pierde el acceso de inmediato, aunque su token aún no venza (OWASP A01 y A07).
+    const r = await pool.query('SELECT ocupacion, estado FROM usuarios WHERE id = $1', [id]);
+    const usuario = r.rows[0];
+    if (!usuario) return { status: 401, error: 'La cuenta ya no existe. Inicia sesión otra vez.' };
+    if (usuario.estado !== 'activa') return { status: 403, error: 'Cuenta deshabilitada' };
+    return { usuario: { id, ocupacion: usuario.ocupacion } };
+}
+
+async function auth(req, res, next) {
+    // El token llega en la cabecera:  Authorization: Bearer <token>
+    const cabecera = req.headers.authorization || '';
+    const [tipo, token] = cabecera.split(' ');
+
+    if (tipo !== 'Bearer' || !token) {
+        return res.status(401).json({ error: 'Debes iniciar sesión.' });
     }
 
     try {
-        // El estado y el rol se leen de la base en cada solicitud: una cuenta deshabilitada
-        // pierde el acceso de inmediato, aunque su token aún no venza (OWASP A01 y A07).
-        const r = await pool.query('SELECT ocupacion, estado FROM usuarios WHERE id = $1', [id]);
-        const usuario = r.rows[0];
-        if (!usuario) {
-            return res.status(401).json({ error: 'La cuenta ya no existe. Inicia sesión otra vez.' });
-        }
-        if (usuario.estado !== 'activa') {
-            return res.status(403).json({ error: 'Cuenta deshabilitada' });
-        }
-        req.usuario = { id, ocupacion: usuario.ocupacion };
+        const resultado = await revisarToken(token);
+        if (resultado.error) return res.status(resultado.status).json({ error: resultado.error });
+        req.usuario = resultado.usuario;
         next();
     } catch (error) {
         next(error);
@@ -46,3 +50,4 @@ async function auth(req, res, next) {
 }
 
 module.exports = auth;
+module.exports.revisarToken = revisarToken;

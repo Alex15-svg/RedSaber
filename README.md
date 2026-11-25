@@ -43,9 +43,10 @@ Toda la plataforma exige una cuenta con correo institucional `@inacapmail.cl`. H
 | Moderación | El administrador acepta o rechaza las apelaciones | RF-13 |
 | Cursos | Los estudiantes forman grupos y solicitan cursos; el docente los abre, los cierra y ve a los ingresados | RF-14, RF-15, RF-19, RF-20 |
 | Talleres | Talleres de la sede con inscritos y capacidad | RF-16 |
-| Mensajería | Crear chats individuales o grupales e invitar a otros usuarios | RF-17 |
+| Mensajería | Chats individuales o grupales por invitación, con mensajes en tiempo real (Socket.IO) | RF-17 |
 
-El envío de mensajes en tiempo real (Socket.IO) aún no está implementado.
+Los mensajes se envían por la API (que valida y guarda en la base) y Socket.IO los entrega al instante a los
+demás participantes. Cada chat es una sala a la que solo se unen sus participantes, con la misma sesión JWT.
 
 ## Tecnologías
 
@@ -54,7 +55,8 @@ El envío de mensajes en tiempo real (Socket.IO) aún no está implementado.
 | Interfaz | React + Vite | 18.3.1 / 5.4.10 |
 | Servidor | Node.js + Express | 20 o superior (probado en 24) / 5 |
 | Base de datos | PostgreSQL (librería `pg`) | 16 o superior (probado en 18) |
-| Seguridad | bcrypt (contraseñas) y jsonwebtoken (sesiones) | 6 / 9 |
+| Tiempo real | Socket.IO (servidor y cliente) | 4.8 |
+| Seguridad | bcrypt, jsonwebtoken, helmet y express-rate-limit | 6 / 9 / 8 / 7 |
 | Archivos y correo | multer (subidas) y Nodemailer (correo) | 2 / 10 |
 | Configuración | dotenv y validator | 18 / 13 |
 
@@ -173,7 +175,8 @@ y una base PostgreSQL.
 4. La aplicación queda en `https://<nombre>.onrender.com/app`.
 
 En el plan gratuito, el servidor se suspende tras 15 minutos sin uso: la primera visita tarda unos 50 s.
-Los archivos subidos (imágenes y PDF) se pierden en cada reinicio, porque el disco no es permanente.
+Los PDF se guardan en la base y se conservan; las fotos de perfil siguen en el disco del servidor, que no es
+permanente, y se pierden en cada reinicio.
 
 Las bases locales creadas con una versión anterior de `tablas.sql` se actualizan con
 `psql -U postgres -d redsaber_db -f backend/migracion_publicacion_libre.sql`.
@@ -247,6 +250,10 @@ Las respuestas son JSON; los errores tienen la forma `{ "error": "mensaje" }`.
 | GET, POST | `/api/chats` | Sesión | Mis chats y crear un chat con invitados |
 | GET | `/api/chats/invitaciones` | Sesión | Invitaciones pendientes |
 | POST | `/api/chats/invitaciones/:id/aceptar`, `.../rechazar` | Invitado | Responder una invitación |
+| GET, POST | `/api/chats/:id/mensajes` | Participante | Historial (100 últimos) y enviar un mensaje (máx. 1000 caracteres) |
+
+Tiempo real: el cliente se conecta a Socket.IO con `auth: { token }` y emite `unirse` / `salir` con el id del
+chat; recibe cada mensaje nuevo en el evento `mensaje`.
 
 ## Pruebas
 
@@ -256,6 +263,7 @@ La API se probó contra un servidor local y una base de datos temporal:
 |---|---|---|
 | Integración de RF-01 a RF-17 | 5 scripts en Node.js (172 casos) | 172 de 172 aprobados |
 | Endurecimiento: cuentas deshabilitadas, cabeceras, límite de intentos, validación | 1 script en Node.js (26 casos) | 26 de 26 aprobados |
+| Mensajes de chat: API y tiempo real con Socket.IO | 1 script en Node.js (18 casos) | 18 de 18 aprobados |
 | Calidad: requerimientos, permisos y reglas de negocio | Postman + Newman (150 pruebas, 685 verificaciones) | 98,7 % aprobadas (12-11, antes de las correcciones) |
 | Seguridad y robustez: inyección SQL, XSS, JWT, IDOR, concurrencia | Postman + Newman (207 pruebas, 1.149 verificaciones) | 97,0 % aprobadas (12-11, antes de las correcciones) |
 
@@ -274,9 +282,9 @@ cuentas deshabilitadas, validación de tipos y formatos, observaciones de cursos
 
 Pendientes:
 
-- RF-18 y RF-21 están parciales, y la mensajería en tiempo real (Socket.IO) no está implementada.
+- RF-18 y RF-21 están parciales.
 - El texto con HTML se guarda tal cual; no es un riesgo en la interfaz porque React lo escapa al mostrarlo.
-- En el plan gratuito de Render, los archivos subidos se pierden al reiniciar y la base no tiene respaldo.
+- En el plan gratuito de Render, las fotos de perfil se pierden al reiniciar y la base no tiene respaldo.
 
 ## Cómo contribuir
 

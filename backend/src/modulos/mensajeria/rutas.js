@@ -12,5 +12,7 @@ router.post('/', controlador.crear);                                  // CU-24: 
 router.get('/invitaciones', controlador.invitaciones);                // invitaciones pendientes
 router.post('/invitaciones/:id/aceptar', controlador.aceptar);        // CU-25
 router.post('/invitaciones/:id/rechazar', controlador.rechazar);      // CU-26
+router.get('/:id/mensajes', controlador.verMensajes);                 // RF-17: historial del chat
+router.post('/:id/mensajes', controlador.enviar);                     // RF-17: enviar (se reparte por Socket.IO)
 
 module.exports = router;
