@@ -100,8 +100,9 @@ CREATE TABLE publicaciones (
     CONSTRAINT ck_publicaciones_etiquetas
         CHECK (tipo = 'publicacion' OR (titulo IS NOT NULL AND carrera IS NOT NULL
                AND asignatura IS NOT NULL AND seccion IS NOT NULL)),
+    -- pendiente: espera la revisión del administrador; rechazada: no pasó la revisión (solo la ve su autor).
     CONSTRAINT ck_publicaciones_estado
-        CHECK (estado IN ('activa', 'deshabilitada')),
+        CHECK (estado IN ('pendiente', 'activa', 'rechazada', 'deshabilitada')),
     CONSTRAINT ck_publicaciones_deshabilitado
         CHECK ((estado = 'deshabilitada') = (deshabilitado_en IS NOT NULL))
 );

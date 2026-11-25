@@ -5,12 +5,14 @@ import { useAviso } from '../contexto.jsx';
 import { useDatos } from '../ganchos.js';
 import { ROLES, fecha } from '../utiles.js';
 import { Estado, Etiqueta, Vacio } from '../componentes/Piezas.jsx';
+import RevisionPublicaciones from './RevisionPublicaciones.jsx';
 
 export default function Moderacion() {
     const avisar = useAviso();
     const { datos, error, cargando, recargar } = useDatos(async () => {
-        const [apelaciones, usuarios] = await Promise.all([api('GET', '/moderacion/apelaciones'), api('GET', '/cuentas/usuarios')]);
-        return { apelaciones, usuarios };
+        const [pendientes, apelaciones, usuarios] = await Promise.all([api('GET', '/moderacion/publicaciones/pendientes'),
+            api('GET', '/moderacion/apelaciones'), api('GET', '/cuentas/usuarios')]);
+        return { pendientes, apelaciones, usuarios };
     });
 
     // Ejecuta una acción de moderación, muestra el mensaje del servidor y vuelve a cargar.
@@ -25,17 +27,20 @@ export default function Moderacion() {
         (r) => (r.eliminados ? `Se eliminaron ${r.eliminados} elementos no apelados o rechazados.` : 'No había nada vencido para eliminar.'));
 
     if (!datos) return <Estado cargando={cargando} error={error} />;
-    const { apelaciones, usuarios } = datos;
+    const { pendientes, apelaciones, usuarios } = datos;
     return (
         <section className="rs-section">
             <div className="row g-3 mb-3">
-                <div className="col-sm-4"><div className="rs-panel rs-panel--ink rs-paper-texture h-100"><div className="rs-stat">{apelaciones.length}</div><div className="rs-meta">APELACIONES PENDIENTES</div></div></div>
-                <div className="col-sm-4"><div className="rs-panel h-100"><div className="rs-stat">{usuarios.filter((u) => u.estado === 'deshabilitada').length}</div><div className="rs-meta">CUENTAS DESHABILITADAS</div></div></div>
-                <div className="col-sm-4"><div className="rs-panel h-100"><p className="rs-meta">ELIMINAR LO VENCIDO SIN APELACIÓN VIGENTE</p>
+                <div className="col-sm-3"><div className="rs-panel rs-panel--ink rs-paper-texture h-100"><div className="rs-stat">{pendientes.length}</div><div className="rs-meta">PUBLICACIONES POR REVISAR</div></div></div>
+                <div className="col-sm-3"><div className="rs-panel h-100"><div className="rs-stat">{apelaciones.length}</div><div className="rs-meta">APELACIONES PENDIENTES</div></div></div>
+                <div className="col-sm-3"><div className="rs-panel h-100"><div className="rs-stat">{usuarios.filter((u) => u.estado === 'deshabilitada').length}</div><div className="rs-meta">CUENTAS DESHABILITADAS</div></div></div>
+                <div className="col-sm-3"><div className="rs-panel h-100"><p className="rs-meta">ELIMINAR LO VENCIDO SIN APELACIÓN VIGENTE</p>
                     <button className="rs-button rs-button--sm" type="button" onClick={limpiar}>Ejecutar ahora</button></div></div>
             </div>
 
-            <h2 className="rs-h3 rs-panel--rule">Apelaciones pendientes</h2>
+            <RevisionPublicaciones pendientes={pendientes} hacer={hacer} />
+
+            <h2 className="rs-h3 rs-panel--rule mt-4">Apelaciones pendientes</h2>
             {apelaciones.length ? apelaciones.map((a) => (
                 <div key={a.id} className="rs-list-row">
                     <Etiqueta acento>{a.usuario_id ? 'Cuenta' : 'Publicación'} Nº {a.usuario_id || a.publicacion_id}</Etiqueta>

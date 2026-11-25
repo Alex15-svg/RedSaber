@@ -2,5 +2,8 @@
 // del archivo .env y, si no están, se usan estos valores por defecto.
 module.exports = {
     UMBRAL_REPORTES: Number(process.env.MODERACION_UMBRAL) || 3,       // reportes para deshabilitar
-    PLAZO_APELACION_DIAS: Number(process.env.PLAZO_APELACION_DIAS) || 7 // días para apelar
+    PLAZO_APELACION_DIAS: Number(process.env.PLAZO_APELACION_DIAS) || 7, // días para apelar
+    // Moderación previa: las publicaciones de estudiantes esperan la revisión del administrador antes
+    // de verse. Activa por defecto; MODERACION_PREVIA=false la apaga (publicación inmediata).
+    MODERACION_PREVIA: process.env.MODERACION_PREVIA !== 'false'
 };

@@ -40,7 +40,7 @@ Toda la plataforma exige una cuenta con correo institucional `@inacapmail.cl`. H
 | Documentos | Biblioteca de PDF por área, con lectura y descarga | RF-10 |
 | Guías | Guías prácticas de docentes, marcadas como verificadas | RF-11 |
 | Reportes | Reportar perfiles y publicaciones; con 3 reportes se deshabilitan y su dueño puede apelar | RF-12 |
-| Moderación | El administrador acepta o rechaza las apelaciones | RF-13 |
+| Moderación | Revisión previa: las publicaciones de estudiantes quedan pendientes hasta que el administrador las aprueba o rechaza (al editarlas vuelven a revisión). Además, acepta o rechaza las apelaciones | RF-12, RF-13 |
 | Cursos | Los estudiantes forman grupos y solicitan cursos; el docente los abre, los cierra y ve a los ingresados | RF-14, RF-15, RF-19, RF-20 |
 | Talleres | Talleres de la sede con inscritos y capacidad | RF-16 |
 | Mensajería | Chats individuales o grupales por invitación, con mensajes en tiempo real (Socket.IO) | RF-17 |
@@ -153,6 +153,7 @@ El archivo `backend/.env` no se sube a GitHub. Variables disponibles:
 | `CORREOS_ADMIN` | No | Correos completos, separados por coma, que se registran como administradores |
 | `MODERACION_UMBRAL` | No | Reportes necesarios para deshabilitar algo (por defecto 3) |
 | `PLAZO_APELACION_DIAS` | No | Días para apelar (por defecto 7) |
+| `MODERACION_PREVIA` | No | `false` publica sin revisión previa (por defecto, las publicaciones de estudiantes esperan revisión) |
 | `LIMITE_INTENTOS` | No | Intentos por correo e IP cada 15 min (por defecto 10 inicios de sesión fallidos y 5 recuperaciones; si se define, se usa para ambos) |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | No | Servidor de correo para la recuperación de contraseña |
 
@@ -239,6 +240,8 @@ Las respuestas son JSON; los errores tienen la forma `{ "error": "mensaje" }`.
 | GET | `/api/moderacion/apelaciones` | Administrador | Apelaciones pendientes |
 | POST | `/api/moderacion/apelaciones/:id/rehabilitar` | Administrador | Aceptar la apelación |
 | POST | `/api/moderacion/apelaciones/:id/rechazar` | Administrador | Rechazar la apelación |
+| GET | `/api/moderacion/publicaciones/pendientes` | Administrador | Publicaciones que esperan revisión |
+| POST | `/api/moderacion/publicaciones/:id/aprobar`, `.../rechazar` | Administrador | Publicar o rechazar (queda en la bitácora) |
 | POST | `/api/moderacion/limpieza` | Administrador | Eliminar ahora lo que no se apeló a tiempo |
 | GET | `/api/cursos` | Sesión | Catálogo de cursos |
 | POST | `/api/cursos/solicitar` | Estudiante | Solicitar un curso con un grupo |
@@ -264,6 +267,7 @@ La API se probó contra un servidor local y una base de datos temporal:
 | Integración de RF-01 a RF-17 | 5 scripts en Node.js (172 casos) | 172 de 172 aprobados |
 | Endurecimiento: cuentas deshabilitadas, cabeceras, límite de intentos, validación | 1 script en Node.js (26 casos) | 26 de 26 aprobados |
 | Mensajes de chat: API y tiempo real con Socket.IO | 1 script en Node.js (18 casos) | 18 de 18 aprobados |
+| Moderación previa: pendiente, aprobar, rechazar, editar vuelve a revisión | 1 script en Node.js (21 casos) | 21 de 21 aprobados |
 | Calidad: requerimientos, permisos y reglas de negocio | Postman + Newman (150 pruebas, 685 verificaciones) | 98,7 % aprobadas (12-11, antes de las correcciones) |
 | Seguridad y robustez: inyección SQL, XSS, JWT, IDOR, concurrencia | Postman + Newman (207 pruebas, 1.149 verificaciones) | 97,0 % aprobadas (12-11, antes de las correcciones) |
 

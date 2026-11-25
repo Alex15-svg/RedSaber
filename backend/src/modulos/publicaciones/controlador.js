@@ -2,6 +2,11 @@
 // y editar o borrar solo las propias (RF-07).
 const modelo = require('./modelo');
 const { leerId, leerPublicacion, leerPublicacionLibre } = require('../../utils/validar');
+const { MODERACION_PREVIA } = require('../../config/moderacion');
+
+// Estado con que queda una publicación al crearla o editarla: con moderación previa espera la revisión
+// del administrador. Las guías no, porque las publica (y verifica) un docente.
+const estadoAlGuardar = (tipo, actual) => (tipo === 'guia' ? actual : (MODERACION_PREVIA ? 'pendiente' : 'activa'));
 
 // Tipos que publica un estudiante. Las guías las publica el docente (RF-11, módulo guias).
 // "publicacion" es la publicación libre (solo texto, como en una red social).
@@ -40,6 +45,7 @@ async function crear(req, res) {
     }
 
     datos.tipo = cuerpo.tipo;
+    datos.estado = estadoAlGuardar(cuerpo.tipo);
     const publicacion = await modelo.crear(req.usuario.id, datos);
     res.status(201).json(publicacion);
 }
@@ -63,6 +69,8 @@ async function editar(req, res) {
         return res.status(400).json({ error: errores.join(' ') });
     }
 
+    // Al editarla vuelve a revisión: así no se puede cambiar el texto después de que la aprueben.
+    datos.estado = estadoAlGuardar(publicacion.tipo, publicacion.estado);
     res.json(await modelo.editar(publicacion.id, datos));
 }
 

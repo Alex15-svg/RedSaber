@@ -15,6 +15,7 @@ export default function Entrada({ p, guardadas, alCambiar }) {
     const modal = useModal();
     const mia = p.autor_id === usuario.id;
     const deshabilitada = p.estado === 'deshabilitada';
+    const visible = !p.estado || p.estado === 'activa'; // pendiente o rechazada: solo la ve su autor
     const guardada = guardadas?.has(p.id);
     const libre = p.tipo === 'publicacion'; // publicación libre: solo texto, sin título ni etiquetas
     const listo = (mensaje) => { modal.cerrar(); avisar(mensaje); alCambiar(); };
@@ -56,12 +57,14 @@ export default function Entrada({ p, guardadas, alCambiar }) {
                     {p.verificada && <Etiqueta>✓ Verificada</Etiqueta>}
                     {p.con_solucion && <Etiqueta>Con solución</Etiqueta>}
                     {deshabilitada && <Etiqueta acento>Deshabilitada por reportes</Etiqueta>}
+                    {p.estado === 'pendiente' && <Etiqueta>En revisión</Etiqueta>}
+                    {p.estado === 'rechazada' && <Etiqueta acento>Rechazada por administración</Etiqueta>}
                 </div>
                 {!libre && <h2 className="rs-entry-title" id={`t-${p.id}`}>{p.titulo}</h2>}
                 {p.descripcion && <p className="rs-entry-text">{p.descripcion}</p>}
                 {!libre && <p className="rs-meta mb-0">{p.carrera}</p>}
                 <div className="rs-actions">
-                    {!deshabilitada && <Accion al={guardar} aria-pressed={!!guardada}>{guardada ? '■ Guardada' : '□ Guardar'}</Accion>}
+                    {visible && <Accion al={guardar} aria-pressed={!!guardada}>{guardada ? '■ Guardada' : '□ Guardar'}</Accion>}
                     {mia ? <>
                         <Accion al={() => modal.abrir('Editar publicación', <FormEditar p={p} alListo={listo} />)}>Editar</Accion>
                         <Accion al={borrar}>Borrar</Accion>

@@ -2,7 +2,7 @@
 // alListo(mensaje) cierra la ventana, avisa y vuelve a cargar la vista.
 import { useState } from 'react';
 import { api } from '../api.js';
-import { exigir, textos } from '../utiles.js';
+import { exigir, textos, avisoPublicado } from '../utiles.js';
 import { useFormulario, Campo, Enviar } from './Formulario.jsx';
 
 const CAMPOS = ['titulo', 'descripcion', 'carrera', 'asignatura', 'seccion'];
@@ -29,13 +29,11 @@ export function FormEditar({ p, alListo }) {
     const { errores, ocupado, onSubmit } = useFormulario(async (datos, marcar) => {
         if (libre) {
             if (!exigir(datos, [['descripcion', 'Escribe algo para publicar.']], marcar)) return;
-            await api('PUT', `/publicaciones/${p.id}`, textos(datos, ['descripcion']));
-            alListo('Cambios guardados.');
+            alListo(avisoPublicado(await api('PUT', `/publicaciones/${p.id}`, textos(datos, ['descripcion'])), 'Cambios guardados.'));
             return;
         }
         if (!exigir(datos, CAMPOS.map((c) => [c, 'Este campo es obligatorio.']), marcar)) return;
-        await api('PUT', `/publicaciones/${p.id}`, textos(datos, CAMPOS));
-        alListo('Cambios guardados.');
+        alListo(avisoPublicado(await api('PUT', `/publicaciones/${p.id}`, textos(datos, CAMPOS)), 'Cambios guardados.'));
     });
     if (libre) {
         return (

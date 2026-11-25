@@ -8,7 +8,11 @@ const pool = require('./dbPostgre');
 // Cambios posteriores a la primera versión de tablas.sql. Cada uno se puede ejecutar más de una vez.
 const ACTUALIZACIONES = [
     // Los PDF se guardan en la base para no perderlos cuando el servidor reinicia (RF-10).
-    'ALTER TABLE documentos ADD COLUMN IF NOT EXISTS contenido BYTEA'
+    'ALTER TABLE documentos ADD COLUMN IF NOT EXISTS contenido BYTEA',
+    // Moderación previa: las publicaciones nuevas quedan pendientes hasta que el administrador las revisa.
+    `ALTER TABLE publicaciones DROP CONSTRAINT IF EXISTS ck_publicaciones_estado;
+     ALTER TABLE publicaciones ADD CONSTRAINT ck_publicaciones_estado
+         CHECK (estado IN ('pendiente', 'activa', 'rechazada', 'deshabilitada'))`
 ];
 
 async function iniciarBase() {

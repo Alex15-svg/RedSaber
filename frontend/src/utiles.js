@@ -2,6 +2,9 @@
 export const ROLES = { estudiante: 'Estudiante', docente: 'Docente', administrador: 'Administración' };
 export const TIPOS = { pregunta: 'Pregunta', solucion: 'Solución', guia: 'Guía docente', publicacion: 'Publicación' };
 export const CARRERAS = ['Ingeniería en Informática', 'Administración', 'Electricidad', 'Construcción'];
+// Mensaje al publicar o editar: con moderación previa, la publicación espera la revisión de administración.
+export const avisoPublicado = (p, hecho = 'Publicación creada.') => (p?.estado === 'pendiente'
+    ? 'Enviada a revisión: se publicará cuando administración la apruebe. La ves en tu perfil.' : hecho);
 
 export const iniciales = (nombre = '?') => nombre.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
 export const fecha = (f) => new Date(f).toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }).toUpperCase();

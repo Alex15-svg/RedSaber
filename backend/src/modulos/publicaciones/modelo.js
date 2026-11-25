@@ -7,10 +7,11 @@ const CAMPOS = `id, autor_id, tipo, titulo, carrera, asignatura, seccion, descri
 
 async function crear(autorId, datos) {
     const resultado = await pool.query(
-        `INSERT INTO publicaciones (autor_id, tipo, titulo, carrera, asignatura, seccion, descripcion)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO publicaciones (autor_id, tipo, titulo, carrera, asignatura, seccion, descripcion, estado)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING ${CAMPOS}`,
-        [autorId, datos.tipo, datos.titulo ?? null, datos.carrera ?? null, datos.asignatura ?? null, datos.seccion ?? null, datos.descripcion]
+        [autorId, datos.tipo, datos.titulo ?? null, datos.carrera ?? null, datos.asignatura ?? null, datos.seccion ?? null, datos.descripcion,
+         datos.estado || 'activa']
     );
     return resultado.rows[0];
 }
@@ -37,10 +38,11 @@ async function editar(id, datos) {
     const resultado = await pool.query(
         `UPDATE publicaciones
             SET titulo = $2, carrera = $3, asignatura = $4, seccion = $5, descripcion = $6,
-                actualizado_en = now()
+                estado = $7, actualizado_en = now()
           WHERE id = $1
           RETURNING ${CAMPOS}`,
-        [id, datos.titulo ?? null, datos.carrera ?? null, datos.asignatura ?? null, datos.seccion ?? null, datos.descripcion]
+        [id, datos.titulo ?? null, datos.carrera ?? null, datos.asignatura ?? null, datos.seccion ?? null, datos.descripcion,
+         datos.estado]
     );
     return resultado.rows[0];
 }

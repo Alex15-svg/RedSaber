@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { api } from '../api.js';
 import { useSesion, useAviso } from '../contexto.jsx';
 import { useDatos } from '../ganchos.js';
-import { TIPOS, CARRERAS, exigir, textos } from '../utiles.js';
+import { TIPOS, CARRERAS, exigir, textos, avisoPublicado } from '../utiles.js';
 import { useFormulario, Campo, Enviar } from '../componentes/Formulario.jsx';
 import { Estado, Vacio } from '../componentes/Piezas.jsx';
 import Entrada from '../componentes/Entrada.jsx';
@@ -21,10 +21,10 @@ function FormDuda({ carreras, enfocar, alPublicar }) {
         const pares = [['titulo', 'Escribe un título.'], ['descripcion', 'Describe tu duda, solución o guía.'], ['carrera', 'Indica la carrera.'],
             ['asignatura', 'Indica la asignatura.'], ['seccion', 'Indica la sección.']];
         if (!exigir(d, pares, marcar)) return;
-        if (d.get('tipo') === 'guia') await api('POST', '/guias', { ...textos(d, CAMPOS), con_solucion: d.get('con_solucion') === 'on' });
-        else await api('POST', '/publicaciones', { ...textos(d, CAMPOS), tipo: d.get('tipo') });
+        const p = d.get('tipo') === 'guia' ? await api('POST', '/guias', { ...textos(d, CAMPOS), con_solucion: d.get('con_solucion') === 'on' })
+            : await api('POST', '/publicaciones', { ...textos(d, CAMPOS), tipo: d.get('tipo') });
         formulario.reset();
-        avisar('Publicación creada.');
+        avisar(avisoPublicado(p));
         alPublicar();
     });
     const opciones = [...new Set([...carreras, ...CARRERAS])];
@@ -53,9 +53,9 @@ function FormLibre({ alPublicar }) {
     const avisar = useAviso();
     const { errores, ocupado, onSubmit } = useFormulario(async (d, marcar, formulario) => {
         if (!exigir(d, [['descripcion', 'Escribe algo para publicar.']], marcar)) return;
-        await api('POST', '/publicaciones', { tipo: 'publicacion', descripcion: textos(d, ['descripcion']).descripcion });
+        const p = await api('POST', '/publicaciones', { tipo: 'publicacion', descripcion: textos(d, ['descripcion']).descripcion });
         formulario.reset();
-        avisar('Publicación creada.');
+        avisar(avisoPublicado(p));
         alPublicar();
     });
 
